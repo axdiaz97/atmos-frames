@@ -414,6 +414,222 @@ input[type="range"]:disabled { opacity: 0.5; }
 .fav-row[aria-pressed="true"] { color: var(--hud-accent); }
 .fav-row:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 2px; }
 
+/* ---------- Capture, playback, power ---------- */
+.flash-fx { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 15; }
+.flash-fx.go { animation: flash 260ms ease-out; }
+@keyframes flash { 0% { opacity: .9; } 100% { opacity: 0; } }
+.viewport.recording { box-shadow: inset 0 0 0 3px rgba(255, 59, 48, .85), 0 24px 70px var(--glass-shadow); }
+.viewport.recording::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 3px rgba(255,59,48,.85); pointer-events: none; z-index: 14; }
+.rec-ind, .flow-ind {
+  position: absolute; top: 16px; z-index: 13;
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .08em;
+  color: #fff; padding: 5px 10px; border-radius: 999px;
+  background: rgba(16,18,22,.45); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  font-variant-numeric: tabular-nums;
+}
+.rec-ind { left: 16px; color: #ff6b61; }
+.rec-dot { width: 9px; height: 9px; border-radius: 50%; background: #ff3b30; box-shadow: 0 0 8px #ff3b30; animation: recpulse 1s ease-in-out infinite; }
+@keyframes recpulse { 50% { opacity: .35; } }
+.flow-ind { right: 16px; color: var(--hud-accent); box-shadow: inset 0 0 0 1px rgba(255,210,122,.6); text-transform: uppercase; }
+.toast {
+  position: absolute; top: 17%; left: 50%; transform: translate(-50%, -4px); z-index: 13;
+  font-size: 12.5px; font-weight: 500; color: #fff; white-space: nowrap;
+  padding: 6px 12px; border-radius: 999px;
+  background: rgba(16,18,22,.55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  opacity: 0; transition: opacity 220ms ease, transform 220ms ease; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.cap-preview {
+  position: absolute; left: 16px; bottom: 16px; z-index: 12;
+  width: 26%; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 0 0 2px #fff, 0 10px 30px rgba(0,0,0,.5);
+  transform: scale(.85); opacity: 0;
+  transition: transform 180ms ease, opacity 180ms ease, width 380ms cubic-bezier(.4,0,.2,1), border-radius 380ms ease;
+  transform-origin: left bottom; pointer-events: none;
+}
+.cap-preview img { display: block; width: 100%; max-width: none; }
+.cap-preview.in { transform: scale(1); opacity: 1; }
+.cap-preview.fly { opacity: 0; transform: scale(.96); transition: opacity 380ms ease, transform 380ms ease; }
+.cap-preview.video::after { content: "▶"; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: 22px; text-shadow: 0 2px 8px rgba(0,0,0,.6); }
+.pb-btn {
+  position: absolute; left: 16px; bottom: 16px; z-index: 11;
+  width: 44px; height: 44px; display: grid; place-items: center;
+  color: #fff; border: 0; border-radius: 12px; cursor: pointer;
+  background: rgba(16,18,22,.45); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.3), 0 4px 14px rgba(0,0,0,.3);
+}
+.pb-btn { opacity: 0; pointer-events: none; transition: opacity 420ms ease; }
+.viewport:has(.dock:not(.idle)) .pb-btn, .pb-btn.show, .pb-btn:focus-visible { opacity: 1; pointer-events: auto; }
+@media (hover: none) { .pb-btn { opacity: .75; pointer-events: auto; } }
+.pb-btn:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 2px; }
+.pb-btn.pulse { animation: pbpulse 600ms ease; }
+@keyframes pbpulse { 40% { transform: scale(1.18); box-shadow: inset 0 0 0 2px var(--hud-accent), 0 4px 14px rgba(0,0,0,.3); } }
+.pb-count {
+  position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 9px; background: var(--hud-accent); color: #1b1406;
+  font-size: 10.5px; font-weight: 700; line-height: 18px; text-align: center;
+}
+.viewport.pb-full .hud, .viewport.pb-open .edit-tab, .viewport.pb-open .pb-btn { visibility: hidden; }
+.viewport.pb-open:not(.pb-full) .dock { visibility: hidden; }
+
+.playback {
+  position: absolute; inset: 0; z-index: 20;
+  display: flex; flex-direction: column;
+  color: #eef0f2;
+  background: rgba(10, 12, 15, 0.82);
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  cursor: default; touch-action: pan-y;
+  animation: pbin 220ms ease;
+}
+@keyframes pbin { from { opacity: 0; } }
+.pb-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.pb-head strong { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.pb-stats { margin-left: auto; font-family: var(--font-mono); font-size: 11.5px; color: rgba(255,255,255,.6); }
+.pb-close, .pb-ic {
+  font: inherit; font-size: 12.5px; color: #fff; cursor: pointer;
+  background: rgba(255,255,255,.1); border: 0; border-radius: 999px; padding: 6px 12px;
+}
+.pb-close:hover, .pb-ic:hover { background: rgba(255,255,255,.18); }
+.pb-ic:disabled { opacity: .35; cursor: default; }
+.pb-ic.danger { color: #ff8a80; }
+.pb-close:focus-visible, .pb-ic:focus-visible, .pb-thumb:focus-visible, .pb-play:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 2px; }
+.pb-grid { flex: 1; overflow-y: auto; padding: 6px 16px 18px; }
+.pb-h { margin: 14px 0 8px; font-size: 10.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); }
+.pb-flow { margin-bottom: 12px; padding: 10px; border-radius: 12px; background: rgba(255,210,122,.07); box-shadow: inset 0 0 0 1px rgba(255,210,122,.25); }
+.pb-flow-cap { font-size: 12px; color: var(--hud-accent); margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.pb-strip { display: flex; gap: 8px; overflow-x: auto; }
+.pb-strip .pb-thumb { flex: none; width: clamp(110px, 16%, 160px); }
+.pb-all { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.pb-thumb { position: relative; padding: 0; border: 0; border-radius: 8px; overflow: hidden; cursor: pointer; background: #000; aspect-ratio: 3 / 2; }
+.pb-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; max-width: none; }
+.pb-thumb:hover img { opacity: .85; }
+.pb-badge { position: absolute; right: 6px; bottom: 6px; font-family: var(--font-mono); font-size: 10.5px; color: #fff; background: rgba(0,0,0,.55); padding: 1px 6px; border-radius: 6px; }
+.pb-empty { height: 100%; min-height: 160px; display: grid; place-content: center; gap: 6px; text-align: center; color: rgba(255,255,255,.75); }
+.pb-empty strong { font-size: 15px; color: #fff; }
+.pb-empty kbd { background: rgba(255,255,255,.15); color: #fff; box-shadow: none; }
+.pb-viewer { position: absolute; inset: 49px 0 0; display: flex; flex-direction: column; background: rgba(6,7,9,.96); }
+.pb-stage { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; overflow: hidden; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.pb-stage img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.pb-stage.playing img { animation: kb 8s linear infinite alternate; }
+@keyframes kb { to { transform: scale(1.06); } }
+.pb-orig-tag { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #fff; background: rgba(0,0,0,.55); padding: 4px 10px; border-radius: 999px; }
+.pb-play { position: absolute; width: 56px; height: 56px; border-radius: 50%; border: 0; cursor: pointer; color: #fff; font-size: 18px; background: rgba(0,0,0,.45); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.7); }
+.pb-stage.playing .pb-play { opacity: 0; }
+.pb-stage.playing:hover .pb-play { opacity: 1; }
+.pb-prog { position: absolute; left: 16px; right: 16px; bottom: 10px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.25); overflow: hidden; }
+.pb-prog i { display: block; height: 100%; width: 0; background: #fff; }
+.pb-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid rgba(255,255,255,.1); }
+.pb-meta { flex: 1; min-width: 140px; display: grid; line-height: 1.3; }
+.pb-meta strong { color: var(--hud-accent); font-size: 13px; }
+.pb-meta span { font-size: 11.5px; color: rgba(255,255,255,.6); font-variant-numeric: tabular-nums; }
+.pb-confirm { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 14px; background: rgba(30,32,36,.95); box-shadow: 0 10px 30px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.12); font-size: 13px; white-space: nowrap; }
+
+/* Power overlay is see-through: the wearer always sees the world, even while booting or shutting down */
+.boot { position: absolute; inset: 0; z-index: 30; display: grid; place-content: center; justify-items: center; gap: 6px; background: radial-gradient(ellipse 45% 30% at 50% 50%, rgba(5,6,8,.38), rgba(5,6,8,0) 100%); color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,.6); transition: opacity 500ms ease; cursor: default; }
+.boot::after { content: ""; position: absolute; left: 50%; top: calc(50% + 34px); width: 120px; height: 2px; margin-left: -60px; border-radius: 1px; background: rgba(255,255,255,.25); opacity: 0; }
+.boot.booting::after { opacity: 1; background: linear-gradient(90deg, #fff 0 var(--p, 0%), rgba(255,255,255,.25) var(--p, 0%)); animation: bootbar 1300ms ease-out forwards; }
+@property --p { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+@keyframes bootbar { to { --p: 100%; } }
+.viewport.powered-off .fx, .viewport.powered-off .vig { opacity: 0 !important; }
+.viewport.powered-off .scene { filter: none !important; }
+.boot-mark { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 3.4vw, 34px); letter-spacing: .5em; padding-left: .5em; opacity: 0; }
+.boot-sub { font-size: 11px; letter-spacing: .6em; padding-left: .6em; color: rgba(255,255,255,.55); opacity: 0; }
+.boot-off { display: none; position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); white-space: nowrap; font-size: 11px; letter-spacing: .08em; color: rgba(255,255,255,.7); padding: 3px 10px; border-radius: 999px; background: rgba(16,18,22,.3); text-shadow: none; }
+.boot.shutting { animation: shut 1000ms ease forwards; }
+.boot.shutting .boot-mark { animation: markout 1000ms ease forwards; }
+@keyframes shut { 0% { opacity: 0; } 35% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes markout { 0% { opacity: 0; } 35% { opacity: 1; } 100% { opacity: 0; letter-spacing: .3em; } }
+.viewport.powered-off .edit-tab, .viewport.powered-off .pb-btn, .viewport.powered-off .hud { visibility: hidden; }
+.viewport.powered-off { cursor: default; }
+.controls .gbtn:disabled, .controls .switch:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.boot.booting .boot-mark { animation: bootin 900ms ease forwards; }
+.boot.booting .boot-sub { animation: bootin 900ms ease 250ms forwards; }
+@keyframes bootin { from { opacity: 0; letter-spacing: .9em; } to { opacity: 1; } }
+.boot.done { opacity: 0; }
+.boot.off .boot-mark, .boot.off .boot-sub { display: none; }
+.boot.off .boot-off { display: block; }
+.boot.off { background: transparent; }
+
+.led-wrap { display: flex; align-items: center; gap: 10px; }
+.led-wrap .lbl { display: grid; line-height: 1.25; }
+.led-wrap .lbl strong { font-weight: 600; font-size: 14px; }
+.led-wrap .lbl small { color: var(--muted); font-size: 11.5px; }
+.led { width: 14px; height: 14px; border-radius: 50%; background: var(--line); box-shadow: inset 0 0 0 1px var(--line); flex: none; }
+.led.blink { background: #fff; box-shadow: 0 0 10px 3px rgba(255,255,255,.9), inset 0 0 0 1px var(--line); }
+.led.rec { background: #ff3b30; box-shadow: 0 0 10px 2px rgba(255,59,48,.8); animation: recpulse 1s ease-in-out infinite; }
+.gbtn.cap[aria-pressed="true"] { background: #ff3b30; color: #fff; }
+.gbtn.cap[aria-pressed="true"] small { color: #fff; opacity: .85; }
+#flowBtn[aria-pressed="true"] { box-shadow: inset 0 0 0 2px #d9a23a, 0 0 0 1px var(--line); }
+#powerBtn[aria-pressed="false"] { background: var(--fg); color: var(--bg); }
+.vol { display: grid; gap: 2px; font-size: 12px; color: var(--muted); min-width: 110px; }
+.vol b { font-family: var(--font-mono); font-weight: 500; color: var(--fg); }
+.vol input { accent-color: var(--accent); }
+@media (prefers-reduced-motion: reduce) {
+  .flash-fx.go { animation-duration: 120ms; }
+  .rec-dot, .led.rec { animation: none; }
+  .pb-stage.playing img, .boot.booting .boot-mark, .boot.booting .boot-sub { animation: none; opacity: 1; }
+  .cap-preview, .cap-preview.fly { transition: opacity 120ms ease; }
+}
+
+/* ---------- Playback glance: small, see-through, never more than 20% of the view ---------- */
+.pb-glance { display: none; }
+.pb-safe { position: absolute; inset: 0; z-index: 3; display: grid; place-content: center; gap: 10px; padding: 14px; text-align: center; font-size: 12.5px; line-height: 1.4; background: rgba(10,12,15,.9); border-radius: inherit; }
+.pb-safe-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.pb-ic.warn { background: var(--hud-accent); color: #1b1406; font-weight: 600; }
+.playback.glance {
+  inset: auto auto 16px 16px;
+  width: min(42%, 520px); max-width: 50%; max-height: 40%;
+  border-radius: 16px;
+  background: rgba(16, 18, 22, 0.34);
+  -webkit-backdrop-filter: blur(8px) saturate(140%); backdrop-filter: blur(8px) saturate(140%);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.16), 0 10px 30px rgba(0,0,0,.25);
+  transition: opacity 600ms ease;
+}
+.playback.glance.leaving { opacity: 0; transition: opacity 600ms ease; }
+.playback.glance .pb-head { padding: 7px 8px; gap: 8px; border-bottom-color: rgba(255,255,255,.08); }
+.playback.glance .pb-head strong { font-size: 10.5px; }
+.playback.glance .pb-stats { font-size: 10.5px; }
+.playback.glance .pb-close, .playback.glance .pb-ic { padding: 4px 9px; font-size: 11.5px; }
+.playback.glance .pb-grid { display: none; }
+.playback.glance .pb-glance { display: flex; align-items: stretch; gap: 6px; padding: 8px; overflow-x: auto; scrollbar-width: none; }
+.pb-glance .pb-thumb { flex: none; height: clamp(44px, 7vh, 64px); width: auto; aspect-ratio: 3 / 2; border-radius: 6px; }
+.pb-glance .pb-thumb.in-flow { box-shadow: inset 0 -2px 0 var(--hud-accent); }
+.pb-glance .pb-thumb.in-flow img { border-bottom: 2px solid var(--hud-accent); }
+.pb-glance .pb-badge { font-size: 9px; padding: 0 4px; right: 3px; bottom: 3px; }
+.pb-glance .pb-gsep { flex: none; width: 1px; background: rgba(255,210,122,.6); margin: 4px 2px; }
+.pb-glance .pb-more { flex: none; display: grid; place-items: center; padding: 0 10px; font: inherit; font-size: 11px; color: #fff; background: rgba(255,255,255,.1); border: 0; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+.pb-glance .pb-gempty { font-size: 12px; color: rgba(255,255,255,.75); padding: 6px 4px; }
+.playback.glance .pb-viewer { position: static; flex: 1; min-height: 0; background: transparent; }
+.playback.glance .pb-stage { min-height: 0; }
+.playback.glance .pb-stage img { border-radius: 6px; }
+.playback.glance .pb-bar { padding: 6px 8px; gap: 6px; border-top-color: rgba(255,255,255,.08); flex-wrap: nowrap; }
+.playback.glance .pb-meta { min-width: 0; }
+.playback.glance .pb-meta strong { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.playback.glance .pb-meta span { display: none; }
+.playback.glance #pbSave, .playback.glance #pbDel, .playback.glance .pb-confirm { display: none; }
+.playback.glance .pb-play { width: 38px; height: 38px; font-size: 13px; }
+.playback.glance:has(.pb-viewer:not([hidden])) .pb-glance { display: none; }
+.pb-full-note { font-size: 11px; color: rgba(255,255,255,.55); }
+
+/* ---------- Storage ---------- */
+.pb-storage { margin: 12px 0 4px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); display: grid; gap: 8px; }
+.pb-st-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.pb-st-top strong { font-size: 16px; }
+.pb-st-top span { font-size: 12px; color: rgba(255,255,255,.6); font-variant-numeric: tabular-nums; }
+.pb-st-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: rgba(255,255,255,.12); }
+.pb-st-bar i { display: block; height: 100%; }
+.pb-st-bar i + i { box-shadow: -1px 0 0 rgba(10,12,15,.9); }
+.sys { background: #8e96a3; } .ph { background: var(--hud-accent); } .vi { background: #64a8ff; } .fr { background: rgba(255,255,255,.18); }
+.pb-st-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11.5px; color: rgba(255,255,255,.8); font-variant-numeric: tabular-nums; }
+.pb-st-legend .sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; vertical-align: 0; }
+.pb-st-left { font-size: 11.5px; color: rgba(255,255,255,.55); }
+.pb-mini { flex: none; display: flex; width: 72px; height: 5px; border-radius: 3px; overflow: hidden; background: rgba(255,255,255,.18); }
+.pb-mini i { display: block; height: 100%; }
+.pb-mini i + i { box-shadow: -1px 0 0 rgba(10,12,15,.9); }
+.pb-head .pb-stats + .pb-mini { margin-left: -2px; }
+.playback.glance .pb-mini { width: 48px; height: 4px; }
+
 /* ---------- Bottom controls bar ---------- */
 .controls {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
@@ -811,7 +1027,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
 <div class="wrap">
   <header>
-    <span class="eyebrow">HCDE 531 · Exploratory prototype v0.9</span>
+    <span class="eyebrow">HCDE 531 · Exploratory prototype v1.0</span>
     <h1>Atmos Frames</h1>
     <p>A simulated view through the glasses. Browse film looks, turn them off, hold to peek at the real scene, and fine-tune any look with basic photo adjustments.</p>
   </header>
@@ -884,8 +1100,54 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
             </section>
           </div>
         </aside>
+        <div class="flash-fx" id="flashFx" aria-hidden="true"></div>
+        <div class="rec-ind" id="recInd" hidden role="status"><span class="rec-dot"></span>REC <span id="recTime">0:00</span></div>
+        <div class="flow-ind" id="flowInd" hidden role="status">Flow marker · <span id="flowCount">0</span></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <div class="cap-preview" id="capPreview" hidden aria-hidden="true"><img id="capPreviewImg" alt=""></div>
+        <button type="button" class="pb-btn" id="pbBtn" aria-label="Open playback">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg>
+        </button>
+        <section class="playback" id="playback" hidden aria-label="Playback">
+          <header class="pb-head">
+            <button type="button" class="pb-close" id="pbClose" aria-label="Close playback">‹ Live</button>
+            <strong>Playback</strong>
+            <span class="pb-stats" id="pbStats"></span>
+            <span class="pb-mini" id="pbMini" role="img"></span>
+            <button type="button" class="pb-ic pb-size" id="pbSize" aria-label="Expand playback">Expand ⤢</button>
+          </header>
+          <div class="pb-glance" id="pbGlance"></div>
+          <div class="pb-grid" id="pbGrid"></div>
+          <div class="pb-safe" id="pbSafe" hidden role="alertdialog" aria-labelledby="pbSafeText">
+            <span id="pbSafeText">Expanded playback covers most of your view. Only expand once you've stopped somewhere safe.</span>
+            <span class="pb-safe-btns"><button type="button" class="pb-ic warn" id="pbSafeYes">I'm stopped somewhere safe</button><button type="button" class="pb-ic" id="pbSafeNo">Stay in glance</button></span>
+          </div>
+          <div class="pb-viewer" id="pbViewer" hidden>
+            <div class="pb-stage" id="pbStage">
+              <img id="pbImg" alt="">
+              <span class="pb-orig-tag" id="pbOrigTag" hidden>Original · no look</span>
+              <button type="button" class="pb-play" id="pbPlay" aria-label="Play">▶</button>
+              <div class="pb-prog" id="pbProgWrap"><i id="pbProg"></i></div>
+            </div>
+            <div class="pb-bar">
+              <button type="button" class="pb-ic" id="pbBack">All</button>
+              <button type="button" class="pb-ic" id="pbPrev" aria-label="Previous capture">‹</button>
+              <div class="pb-meta"><strong id="pbLook"></strong><span id="pbInfo"></span></div>
+              <button type="button" class="pb-ic" id="pbNext" aria-label="Next capture">›</button>
+              <button type="button" class="pb-ic" id="pbOrigBtn">Hold for original</button>
+              <button type="button" class="pb-ic" id="pbSave">Save</button>
+              <button type="button" class="pb-ic danger" id="pbDel">Delete</button>
+            </div>
+            <div class="pb-confirm" id="pbConfirm" hidden role="alertdialog" aria-labelledby="pbConfirmText">
+              <span id="pbConfirmText">Delete this photo?</span>
+              <button type="button" class="pb-ic danger" id="pbDelYes">Delete</button>
+              <button type="button" class="pb-ic" id="pbDelNo">Cancel</button>
+            </div>
+          </div>
+        </section>
+        <div class="boot" id="boot" hidden><span class="boot-mark">ATMOS</span><span class="boot-sub">FRAMES</span><span class="boot-off">Atmos off · lenses clear</span></div>
       </div>
-      <p class="hint">Press and hold the view (or <kbd>Space</kbd>) to peek at the real scene. Swipe on the view or use <kbd>←</kbd> <kbd>→</kbd> to switch looks. <kbd>F</kbd> turns filters on or off. Move over the view to bring the look dock back. Click the <kbd>‹</kbd> on the right edge, swipe in from the right edge, or press <kbd>E</kbd> to open the edit sliders. Tap the star above the chosen look's preview (or press <kbd>S</kbd>) to favorite it; favorites move to the left of Live.</p>
+      <p class="hint">Press and hold the view (or <kbd>Space</kbd>) to peek at the real scene. Swipe on the view or use <kbd>←</kbd> <kbd>→</kbd> to switch looks. <kbd>F</kbd> turns filters on or off. Move over the view to bring the look dock back. Click the <kbd>‹</kbd> on the right edge, swipe in from the right edge, or press <kbd>E</kbd> to open the edit sliders. Tap the star above the chosen look's preview (or press <kbd>S</kbd>) to favorite it; favorites move to the left of Live. <kbd>C</kbd> takes a photo, <kbd>R</kbd> starts and stops video, <kbd>M</kbd> opens and closes a flow marker, and <kbd>P</kbd> opens a small playback glance; <kbd>X</kbd> expands it once you confirm you're somewhere safe.</p>
 
       <div class="controls glass" aria-label="Glasses controls">
         <div class="switch-row">
@@ -896,6 +1158,15 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
         <button type="button" class="gbtn" id="prevBtn">‹ Previous<small>Swipe back</small></button>
         <button type="button" class="gbtn" id="nextBtn">Next ›<small>Swipe forward</small></button>
         <button type="button" class="gbtn" id="peekBtn">Hold to peek<small>Press and hold temple · Space</small></button>
+        <span class="csep" aria-hidden="true"></span>
+        <button type="button" class="gbtn cap" id="shotBtn">Capture photo<small>Tap capture button · C</small></button>
+        <button type="button" class="gbtn cap" id="recBtn" aria-pressed="false">Record video<small>Hold capture button · R</small></button>
+        <button type="button" class="gbtn" id="flowBtn" aria-pressed="false">Flow marker<small>Hand gesture · M</small></button>
+        <button type="button" class="gbtn" id="pbOpenBtn">Playback<small>Double-tap temple · P</small></button>
+        <span class="csep" aria-hidden="true"></span>
+        <div class="led-wrap"><span class="led" id="led" aria-hidden="true"></span><span class="lbl"><strong>Capture light</strong><small id="ledText">Off: nothing is being captured</small></span></div>
+        <button type="button" class="gbtn" id="powerBtn" aria-pressed="true">Power off<small>Hold temple 2 s</small></button>
+        <label class="vol"><span>Volume <b id="volVal">60</b></span><input type="range" id="vol" min="0" max="100" value="60"></label>
         <span class="csep" aria-hidden="true"></span>
         <label class="file" id="rawLabel">
           <span class="meta">Raw photo<small id="rawName">Using the default photo</small></span>
@@ -1151,6 +1422,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
         chips.scrollTo({ left: active.offsetLeft - chips.clientWidth / 2 + active.offsetWidth / 2, behavior: "smooth" });
       }
     }
+    if (state.rec) queueSeg();
   }
 
   function choose(i) {
@@ -1184,7 +1456,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
   var gesture = null;
   viewport.addEventListener("pointerdown", function (e) {
-    if (e.target.closest("button, .drawer")) return;
+    if (e.target.closest("button, .drawer, .playback, .boot")) return;
     if (!viewport.classList.contains("editing")) {
       var r = viewport.getBoundingClientRect();
       if (e.clientX > r.right - r.width * 0.12) { edgeSwipe = { x: e.clientX }; return; }
@@ -1247,6 +1519,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     var t = e.target;
     if (t && t.tagName === "INPUT" && t.type !== "checkbox") return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (handleCaptureKeys(e)) return;
     if (e.code === "Space") { e.preventDefault(); if (!e.repeat) setPeek(true); }
     else if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); cycle(1); }
     else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); cycle(-1); }
@@ -1317,6 +1590,517 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   setDockStyle("carousel");
   wakeDock(3200);
   wakeLabel();
+  /* ================= Capture, playback, flow marker, power, sound ================= */
+  var pb = { open: false, list: [], idx: 0, playing: false, raf: null, showOrig: false };
+  var caps = [];               // newest first: {id,type,ts,look,flowId,duration,filtered,original,thumb,segs}
+  var urlCache = new WeakMap();
+  function urlFor(blob) { if (!blob) return ""; var u = urlCache.get(blob); if (!u) { u = URL.createObjectURL(blob); urlCache.set(blob, u); } return u; }
+  state.power = true; state.vol = 0.6; state.flow = null; state.rec = null;
+
+  /* ---- Sound (WebAudio, starts after the first click or key press) ---- */
+  var actx = null;
+  function tone(freqs, dur, type, gain) {
+    if (!state.vol) return;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      var t0 = actx.currentTime;
+      freqs.forEach(function (f, k) {
+        var o = actx.createOscillator(), g = actx.createGain();
+        o.type = type || "sine"; o.frequency.value = f;
+        var st = t0 + k * dur;
+        g.gain.setValueAtTime(0.0001, st);
+        g.gain.exponentialRampToValueAtTime((gain || 0.18) * state.vol, st + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, st + dur);
+        o.connect(g).connect(actx.destination); o.start(st); o.stop(st + dur + 0.02);
+      });
+    } catch (e) {}
+  }
+  function shutterSound() {
+    if (!state.vol) return;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      var n = actx.sampleRate * 0.07, buf = actx.createBuffer(1, n, actx.sampleRate), d = buf.getChannelData(0);
+      for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
+      var src = actx.createBufferSource(), g = actx.createGain();
+      src.buffer = buf; g.gain.value = 0.5 * state.vol;
+      src.connect(g).connect(actx.destination); src.start();
+    } catch (e) {}
+  }
+
+  /* ---- Storage: IndexedDB in this browser, memory if unavailable ---- */
+  var dbp = null;
+  function db() {
+    if (dbp) return dbp;
+    dbp = new Promise(function (res) {
+      try {
+        var rq = indexedDB.open("atmos-frames", 1);
+        rq.onupgradeneeded = function () { rq.result.createObjectStore("caps", { keyPath: "id" }); };
+        rq.onsuccess = function () { res(rq.result); };
+        rq.onerror = function () { res(null); };
+      } catch (e) { res(null); }
+    });
+    return dbp;
+  }
+  function idb(mode, fn) {
+    return db().then(function (d) {
+      if (!d) return null;
+      return new Promise(function (res) {
+        try { var tx = d.transaction("caps", mode), r = fn(tx.objectStore("caps")); tx.oncomplete = function () { res(r && r.result); }; tx.onerror = function () { res(null); }; }
+        catch (e) { res(null); }
+      });
+    });
+  }
+  function saveCap(item) { caps.unshift(item); updatePbBtn(); return idb("readwrite", function (s) { return s.put(item); }); }
+  function deleteCap(id) { caps = caps.filter(function (c) { return c.id !== id; }); updatePbBtn(); return idb("readwrite", function (s) { return s.delete(id); }); }
+  function loadCaps() {
+    return idb("readonly", function (s) { return s.getAll(); }).then(function (all) {
+      if (all && all.length) { caps = all.sort(function (a, b) { return b.ts - a.ts; }); updatePbBtn(); }
+    });
+  }
+
+  /* ---- Rendering what the wearer sees into an image ---- */
+  function loadImg(src) { return new Promise(function (res, rej) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = rej; i.src = src; }); }
+  function toBlob(c, q) { return new Promise(function (res) { c.toBlob(function (b) { res(b); }, "image/jpeg", q || 0.9); }); }
+  function scaled(c, w) { var s = document.createElement("canvas"); s.width = w; s.height = Math.round(w * c.height / c.width); s.getContext("2d").drawImage(c, 0, 0, s.width, s.height); return s; }
+  function seeingReality() { return !state.on || state.peek; }
+  function lookLabel() {
+    var f = FILTERS[state.idx];
+    var base = seeingReality() ? "Reality view" : f.live ? "Live" : f.name;
+    return base + (!seeingReality() && adjusted() ? " + edits" : "");
+  }
+  function compose(original) {
+    return loadImg(rawSrc).then(function (raw) {
+      var W = Math.min(2000, raw.naturalWidth), H = Math.round(W * raw.naturalHeight / raw.naturalWidth);
+      var c = document.createElement("canvas"); c.width = W; c.height = H;
+      var g = c.getContext("2d"); g.drawImage(raw, 0, 0, W, H);
+      var f = FILTERS[state.idx];
+      if (original || seeingReality()) return c;
+      var step = Promise.resolve();
+      if (!f.live) {
+        var baked = f.edit ? editSrc : bakedFor(f);
+        step = (baked ? loadImg(baked) : Promise.resolve(null)).then(function (bi) {
+          g.save(); g.globalAlpha = state.intensity;
+          if (bi) g.drawImage(bi, 0, 0, W, H); else { g.filter = "url(#" + f.recipe + ")"; g.drawImage(raw, 0, 0, W, H); }
+          g.restore();
+        });
+      }
+      return step.then(function () {
+        if (!adjusted()) return c;
+        var c2 = document.createElement("canvas"); c2.width = W; c2.height = H;
+        var g2 = c2.getContext("2d"); g2.filter = "url(#f-adjust)"; g2.drawImage(c, 0, 0); g2.filter = "none";
+        if (adj.vignette) {
+          var rg = g2.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.3, W / 2, H / 2, Math.max(W, H) * 0.62);
+          rg.addColorStop(0, "rgba(0,0,0,0)"); rg.addColorStop(1, "rgba(0,0,0," + (0.85 * adj.vignette / 100) + ")");
+          g2.fillStyle = rg; g2.fillRect(0, 0, W, H);
+        }
+        return c2;
+      });
+    });
+  }
+
+  /* ---- Feedback: flash, capture light, preview, toast ---- */
+  function flashFx() {
+    var el = $("flashFx"); el.classList.remove("go"); void el.offsetWidth; el.classList.add("go");
+  }
+  function led(mode) {
+    var l = $("led"); l.className = "led" + (mode ? " " + mode : "");
+    $("ledText").textContent = mode === "rec" ? "Recording: red light is on" : mode === "blink" ? "Photo taken: light blinked" : "Off: nothing is being captured";
+    if (mode === "blink") setTimeout(function () { if (!state.rec) led(""); }, 600);
+  }
+  var toastT = null;
+  function toast(text) {
+    var el = $("toast"); el.textContent = text; el.classList.add("show");
+    clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove("show"); }, 1600);
+  }
+  function showPreview(blob, isVideo) {
+    var p = $("capPreview");
+    $("capPreviewImg").src = urlFor(blob);
+    p.classList.toggle("video", !!isVideo);
+    p.classList.remove("fly"); p.hidden = false; void p.offsetWidth; p.classList.add("in");
+    setTimeout(function () { p.classList.add("fly"); }, 500);
+    setTimeout(function () { p.hidden = true; p.classList.remove("in", "fly"); }, 900);
+  }
+  function updatePbBtn() {
+    var n = caps.length;
+    $("pbBtn").setAttribute("aria-label", n ? "Open playback, " + n + " captures" : "Open playback");
+  }
+
+  /* ---- Photo ---- */
+  var busy = false;
+  function capturePhoto() {
+    if (!state.power || pb.open || busy) return;
+    if (state.rec) { toast("Stop recording to take a photo"); return; }
+    busy = true; flashFx(); shutterSound(); led("blink");
+    var flowId = state.flow ? state.flow.id : null, look = lookLabel();
+    Promise.all([compose(false), compose(true)]).then(function (cs) {
+      return Promise.all([toBlob(cs[0], 0.9), toBlob(cs[1], 0.9), toBlob(scaled(cs[0], 420), 0.82)]);
+    }).then(function (b) {
+      var item = { id: "c" + Date.now(), type: "photo", ts: Date.now(), look: look, flowId: flowId, filtered: b[0], original: b[1], thumb: b[2] };
+      if (state.flow) { state.flow.count++; $("flowCount").textContent = state.flow.count; }
+      saveCap(item); showPreview(b[2], false);
+    }).catch(function () { toast("Couldn't capture this frame"); }).then(function () { busy = false; });
+  }
+
+  /* ---- Video (simulated: keyframes each time the look or edits change) ---- */
+  var MAX_REC = 60;
+  function sceneKey() { return [state.idx, state.on, state.peek, state.intensity, JSON.stringify(adj)].join("|"); }
+  function grabSeg() {
+    var r = state.rec; if (!r) return;
+    var key = sceneKey(); if (key === r.lastKey) return;
+    r.lastKey = key;
+    var t = Date.now() - r.start, look = lookLabel();
+    r.pending.push(compose(false).then(function (c) { return toBlob(scaled(c, 1600), 0.86); }).then(function (b) { r.segs.push({ t: t, blob: b, look: look }); }));
+  }
+  var segTimer = null;
+  function queueSeg() { if (!state.rec) return; clearTimeout(segTimer); segTimer = setTimeout(grabSeg, 350); }
+  function toggleRec() {
+    if (!state.power || pb.open) return;
+    if (!state.rec) {
+      state.rec = { start: Date.now(), segs: [], pending: [], lastKey: null, flowId: state.flow ? state.flow.id : null, look: lookLabel() };
+      state.rec.originalP = compose(true).then(function (c) { return toBlob(c, 0.9); });
+      grabSeg();
+      viewport.classList.add("recording"); $("recInd").hidden = false; led("rec");
+      $("recBtn").setAttribute("aria-pressed", "true"); $("recBtn").firstChild.nodeValue = "Stop recording";
+      tone([880, 1320], 0.09, "sine", 0.16);
+      state.rec.tick = setInterval(function () {
+        var s = Math.floor((Date.now() - state.rec.start) / 1000);
+        $("recTime").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+        if (s >= MAX_REC) { toast("Recording limit reached (1:00)"); toggleRec(); }
+      }, 250);
+    } else {
+      var r = state.rec; state.rec = null;
+      clearInterval(r.tick); clearTimeout(segTimer);
+      viewport.classList.remove("recording"); $("recInd").hidden = true; led("");
+      $("recBtn").setAttribute("aria-pressed", "false"); $("recBtn").firstChild.nodeValue = "Record video";
+      $("recTime").textContent = "0:00";
+      tone([1320], 0.12, "sine", 0.16);
+      var duration = Math.max(1, Math.round((Date.now() - r.start) / 1000));
+      Promise.all(r.pending).then(function () { return r.originalP; }).then(function (orig) {
+        r.segs.sort(function (a, b) { return a.t - b.t; });
+        if (!r.segs.length) return;
+        var poster = r.segs[0].blob;
+        return loadImg(urlFor(poster)).then(function (im) {
+          var c = document.createElement("canvas"); c.width = im.naturalWidth; c.height = im.naturalHeight; c.getContext("2d").drawImage(im, 0, 0);
+          return toBlob(scaled(c, 420), 0.82);
+        }).then(function (thumb) {
+          var item = { id: "v" + Date.now(), type: "video", ts: r.start, look: r.look, flowId: r.flowId, duration: duration, filtered: poster, original: orig, thumb: thumb, segs: r.segs.map(function (s) { return { t: s.t, blob: s.blob, look: s.look }; }) };
+          if (r.flowId && state.flow && state.flow.id === r.flowId) { state.flow.count++; $("flowCount").textContent = state.flow.count; }
+          saveCap(item); showPreview(thumb, true);
+        });
+      }).catch(function () { toast("Couldn't save this recording"); });
+    }
+  }
+
+  /* ---- Flow marker ---- */
+  function toggleFlow() {
+    if (!state.power || pb.open) return;
+    if (!state.flow) {
+      state.flow = { id: "f" + Date.now(), count: 0 };
+      $("flowCount").textContent = "0"; $("flowInd").hidden = false;
+      $("flowBtn").setAttribute("aria-pressed", "true"); $("flowBtn").firstChild.nodeValue = "Close flow";
+      tone([660, 990], 0.08, "triangle", 0.14); toast("Flow marker open");
+    } else {
+      var n = state.flow.count; state.flow = null;
+      $("flowInd").hidden = true;
+      $("flowBtn").setAttribute("aria-pressed", "false"); $("flowBtn").firstChild.nodeValue = "Flow marker";
+      tone([990, 660], 0.08, "triangle", 0.14);
+      toast(n ? "Flow moment saved · " + n + (n === 1 ? " capture" : " captures") : "Flow marker closed · nothing captured");
+    }
+  }
+
+  /* ---- Power: boot and shutdown, controls go dead while off ---- */
+  var powerTimers = [], powering = false;
+  var POWER_CTRLS = ["toggleBtn", "prevBtn", "nextBtn", "peekBtn", "shotBtn", "recBtn", "flowBtn", "pbOpenBtn"];
+  function clearPowerTimers() { powerTimers.forEach(clearTimeout); powerTimers = []; }
+  function setPowered(on) {
+    POWER_CTRLS.forEach(function (id) { $(id).disabled = !on; });
+    viewport.classList.toggle("powered-off", !on);
+    $("powerBtn").setAttribute("aria-pressed", String(on));
+    $("powerBtn").firstChild.nodeValue = on ? "Power off" : "Power on";
+  }
+  function boot(withSound) {
+    clearPowerTimers(); powering = true; state.power = false; setPowered(false);
+    var b = $("boot"); b.hidden = false; b.className = "boot"; void b.offsetWidth; b.classList.add("booting");
+    if (withSound) tone([523, 784, 1047], 0.14, "sine", 0.14);
+    powerTimers.push(setTimeout(function () { b.classList.add("done"); }, 1300));
+    powerTimers.push(setTimeout(function () {
+      b.hidden = true; b.className = "boot";
+      state.power = true; powering = false; setPowered(true);
+      wakeLabel(); wakeDock(2200);
+    }, 1800));
+  }
+  function powerOff() {
+    clearPowerTimers(); powering = true;
+    if (state.rec) toggleRec();
+    if (state.flow) toggleFlow();
+    if (pb.open) closePlayback();
+    setEditing(false); setPeek(false);
+    state.power = false; setPowered(false); led("");
+    tone([784, 523, 330], 0.12, "sine", 0.12);
+    var b = $("boot"); b.hidden = false; b.className = "boot"; void b.offsetWidth; b.classList.add("shutting");
+    powerTimers.push(setTimeout(function () { b.className = "boot off"; powering = false; }, 1000));
+  }
+  function togglePower() { if (powering) return; if (state.power) powerOff(); else boot(true); }
+
+  /* ---- Playback ---- */
+  function fmtTime(ts) { return new Date(ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
+  function fmtDur(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  /* Playback opens as a small see-through glance (≤ 20% of the view). Expanding to full is a deliberate, confirmed step. */
+  pb.mode = "glance"; pb.safeOk = false;
+  var pbIdleT = null, pbCloseT = null;
+  function wakePb() {
+    var el = $("playback"); el.classList.remove("idle", "leaving");
+    clearTimeout(pbIdleT); clearTimeout(pbCloseT);
+    if (pb.mode !== "glance" || !pb.open) return;
+    pbIdleT = setTimeout(function idle() {
+      if (pb.playing || !$("pbSafe").hidden) { pbIdleT = setTimeout(idle, 1000); return; }
+      el.classList.add("leaving");
+      pbCloseT = setTimeout(function () { if (pb.open && pb.mode === "glance") closePlayback(true); }, 600);
+    }, 3000);
+  }
+  function setPbMode(mode) {
+    pb.mode = mode;
+    var el = $("playback");
+    el.classList.toggle("glance", mode === "glance");
+    viewport.classList.toggle("pb-full", mode === "full");
+    $("pbSize").textContent = mode === "glance" ? "Expand ⤢" : "Collapse ⤡";
+    $("pbSize").setAttribute("aria-label", mode === "glance" ? "Expand playback" : "Collapse playback to glance");
+    $("pbSafe").hidden = true;
+    if (!$("pbViewer").hidden) showItem(); else refreshList();
+    wakePb();
+  }
+  function requestExpand() {
+    if (pb.mode === "full") { setPbMode("glance"); return; }
+    if (pb.safeOk) { setPbMode("full"); return; }
+    stopVideo(); $("pbSafe").hidden = false; $("pbSafeYes").focus(); wakePb();
+  }
+  function refreshList() { if (pb.mode === "glance") renderGlance(); else renderGrid(); }
+  function openPlayback() {
+    if (!state.power || state.rec) { if (state.rec) toast("Stop recording to open playback"); return; }
+    pb.open = true; setEditing(false); dock.classList.add("idle");
+    viewport.classList.add("pb-open"); $("playback").hidden = false; $("pbViewer").hidden = true;
+    setPbMode("glance"); $("pbClose").focus();
+  }
+  function closePlayback(auto) {
+    stopVideo(); clearTimeout(pbIdleT); clearTimeout(pbCloseT);
+    pb.open = false; $("playback").hidden = true; $("pbSafe").hidden = true; $("playback").classList.remove("leaving");
+    dock.classList.add("idle");
+    viewport.classList.remove("pb-open", "pb-full");
+    if (auto) { if (document.activeElement && $("playback").contains(document.activeElement)) document.activeElement.blur(); }
+    else { wakeLabel(); $("pbBtn").focus(); }
+  }
+  var GLANCE_MAX = 8;
+  function renderGlance() {
+    var g = $("pbGlance"); g.innerHTML = "";
+    statsLine();
+    if (!caps.length) { g.innerHTML = '<span class="pb-gempty">Nothing captured yet. Press <b>C</b> for a photo or <b>R</b> to record.</span>'; return; }
+    var flowItems = caps.filter(function (c) { return c.flowId; });
+    var rest = caps.filter(function (c) { return !c.flowId; });
+    var list = flowItems.concat(rest), shown = list.slice(0, GLANCE_MAX);
+    shown.forEach(function (it, k) {
+      if (k === flowItems.length && flowItems.length && k < shown.length) { var sp = document.createElement("span"); sp.className = "pb-gsep"; sp.setAttribute("aria-hidden", "true"); g.appendChild(sp); }
+      var b = thumbBtn(it, list, k); if (it.flowId) b.classList.add("in-flow"); g.appendChild(b);
+    });
+    if (list.length > shown.length) {
+      var more = document.createElement("button"); more.type = "button"; more.className = "pb-more";
+      more.textContent = "+" + (list.length - shown.length) + " more";
+      more.addEventListener("click", requestExpand); g.appendChild(more);
+    }
+  }
+  /* Hypothetical device storage: 256 GB. Each photo keeps its unfiltered original. */
+  var STORAGE_GB = 256, SYSTEM_GB = 14.2, PHOTO_MB = 24, VIDEO_MB_PER_S = 6.25;
+  function storage() {
+    var np = 0, nv = 0, vs = 0;
+    caps.forEach(function (c) { if (c.type === "photo") np++; else { nv++; vs += c.duration || 0; } });
+    var photoGB = np * PHOTO_MB / 1024, videoGB = vs * VIDEO_MB_PER_S / 1024, used = SYSTEM_GB + photoGB + videoGB;
+    return { np: np, nv: nv, vs: vs, photoGB: photoGB, videoGB: videoGB, used: used, free: Math.max(0, STORAGE_GB - used) };
+  }
+  function fmtGB(g) { return g < 1 ? Math.round(g * 1024) + " MB" : g.toFixed(1) + " GB"; }
+  function miniBar(st) {
+    var pct = function (g) { return g > 0 ? Math.max(100 * g / STORAGE_GB, 1.5).toFixed(2) : 0; };
+    var m = $("pbMini");
+    m.innerHTML = '<i class="sys" style="width:' + pct(SYSTEM_GB) + '%"></i><i class="ph" style="width:' + pct(st.photoGB) + '%"></i><i class="vi" style="width:' + pct(st.videoGB) + '%"></i>';
+    var label = fmtGB(st.used) + " of " + STORAGE_GB + " GB used (" + (100 * st.used / STORAGE_GB).toFixed(1) + "%)";
+    m.setAttribute("aria-label", "Storage: " + label); m.title = label;
+  }
+  function statsLine() {
+    var st = storage(); miniBar(st);
+    if (pb.mode === "glance") { $("pbStats").textContent = fmtGB(st.free) + " free"; return; }
+    $("pbStats").textContent = st.np + (st.np === 1 ? " photo" : " photos") + " · " + st.nv + (st.nv === 1 ? " video" : " videos") + " · " + fmtGB(st.free) + " free";
+  }
+  function storageCard() {
+    var st = storage(), pct = function (g) { return (100 * g / STORAGE_GB); };
+    var seg = function (cls, g) { return '<i class="' + cls + '" style="width:' + (g > 0 ? Math.max(pct(g), 0.8) : 0).toFixed(2) + '%"></i>'; };
+    var morePhotos = Math.floor(st.free * 1024 / PHOTO_MB), moreHours = (st.free * 1024 / VIDEO_MB_PER_S / 3600);
+    var d = document.createElement("div"); d.className = "pb-storage";
+    d.innerHTML =
+      '<div class="pb-st-top"><strong>' + fmtGB(st.free) + ' free</strong><span>of ' + STORAGE_GB + ' GB · ' + fmtGB(st.used) + ' used (' + pct(st.used).toFixed(1) + '%)</span></div>' +
+      '<div class="pb-st-bar" role="img" aria-label="Storage: ' + fmtGB(st.used) + ' used of ' + STORAGE_GB + ' GB">' + seg("sys", SYSTEM_GB) + seg("ph", st.photoGB) + seg("vi", st.videoGB) + '</div>' +
+      '<div class="pb-st-legend">' +
+        '<span><b class="sw ph"></b>Photos · ' + st.np + ' · ' + fmtGB(st.photoGB) + '</span>' +
+        '<span><b class="sw vi"></b>Videos · ' + st.nv + ' · ' + fmtDur(Math.round(st.vs)) + ' · ' + fmtGB(st.videoGB) + '</span>' +
+        '<span><b class="sw sys"></b>System · ' + fmtGB(SYSTEM_GB) + '</span>' +
+        '<span><b class="sw fr"></b>Free · ' + fmtGB(st.free) + '</span>' +
+      '</div>' +
+      '<div class="pb-st-left">Room for about ' + morePhotos.toLocaleString() + ' more photos or ' + moreHours.toFixed(1) + ' hours of 4K video. Photos include their unfiltered original.</div>';
+    return d;
+  }
+  function thumbBtn(item, list, k) {
+    var b = document.createElement("button"); b.type = "button"; b.className = "pb-thumb";
+    b.setAttribute("aria-label", (item.type === "video" ? "Video, " + fmtDur(item.duration) : "Photo") + ", " + item.look + ", " + fmtTime(item.ts));
+    var im = document.createElement("img"); im.alt = ""; im.src = urlFor(item.thumb); b.appendChild(im);
+    if (item.type === "video") { var v = document.createElement("span"); v.className = "pb-badge"; v.textContent = "▶ " + fmtDur(item.duration); b.appendChild(v); }
+    b.addEventListener("click", function () { openViewer(list, k); });
+    return b;
+  }
+  function renderGrid() {
+    var g = $("pbGrid"); g.innerHTML = "";
+    statsLine();
+    g.appendChild(storageCard());
+    if (!caps.length) {
+      g.insertAdjacentHTML("beforeend", '<div class="pb-empty"><strong>Nothing captured yet</strong><span>Press <kbd>C</kbd> to take a photo, <kbd>R</kbd> to record, or <kbd>M</kbd> to open a flow marker first.</span></div>');
+      return;
+    }
+    var flows = {}, order = [];
+    caps.forEach(function (c) { if (c.flowId) { if (!flows[c.flowId]) { flows[c.flowId] = []; order.push(c.flowId); } flows[c.flowId].push(c); } });
+    if (order.length) {
+      var h = document.createElement("h3"); h.className = "pb-h"; h.textContent = "Flow moments"; g.appendChild(h);
+      order.forEach(function (fid, n) {
+        var list = flows[fid].slice().sort(function (a, b) { return a.ts - b.ts; });
+        var sec = document.createElement("div"); sec.className = "pb-flow";
+        var cap = document.createElement("div"); cap.className = "pb-flow-cap";
+        cap.textContent = "Flow " + (order.length - n) + " · " + list.length + (list.length === 1 ? " capture" : " captures") + " · " + fmtTime(list[0].ts) + (list.length > 1 ? "–" + fmtTime(list[list.length - 1].ts) : "");
+        sec.appendChild(cap);
+        var strip = document.createElement("div"); strip.className = "pb-strip";
+        list.forEach(function (it, k) { strip.appendChild(thumbBtn(it, list, k)); });
+        sec.appendChild(strip); g.appendChild(sec);
+      });
+    }
+    var h2 = document.createElement("h3"); h2.className = "pb-h"; h2.textContent = "All captures"; g.appendChild(h2);
+    var grid = document.createElement("div"); grid.className = "pb-all";
+    caps.forEach(function (it, k) { grid.appendChild(thumbBtn(it, caps, k)); });
+    g.appendChild(grid);
+  }
+  function current() { return pb.list[pb.idx]; }
+  function openViewer(list, k) { pb.list = list.slice(); pb.idx = k; $("pbViewer").hidden = false; $("pbConfirm").hidden = true; showItem(); $("pbBack").focus(); }
+  function showItem() {
+    stopVideo();
+    var it = current(); if (!it) { $("pbViewer").hidden = true; refreshList(); return; }
+    pb.showOrig = false;
+    $("pbImg").src = urlFor(it.filtered);
+    $("pbOrigTag").hidden = true;
+    $("pbLook").textContent = it.look;
+    $("pbInfo").textContent = (it.type === "video" ? "Video · " + fmtDur(it.duration) : "Photo") + " · " + fmtTime(it.ts) + (it.flowId ? " · Flow moment" : "") + " · " + (pb.idx + 1) + " of " + pb.list.length;
+    $("pbPlay").hidden = it.type !== "video"; $("pbProgWrap").hidden = it.type !== "video"; $("pbProg").style.width = "0%";
+    $("pbSave").textContent = it.type === "video" ? "Save frame" : "Save";
+    $("pbPrev").disabled = pb.idx <= 0; $("pbNext").disabled = pb.idx >= pb.list.length - 1;
+  }
+  function setOrig(on) {
+    var it = current(); if (!it || pb.showOrig === on) return;
+    pb.showOrig = on;
+    if (on) stopVideo();
+    $("pbImg").src = urlFor(on ? it.original : it.filtered);
+    $("pbOrigTag").hidden = !on;
+  }
+  function stopVideo() { pb.playing = false; cancelAnimationFrame(pb.raf); $("pbPlay").textContent = "▶"; $("pbPlay").setAttribute("aria-label", "Play"); $("pbStage").classList.remove("playing"); }
+  function playVideo() {
+    var it = current(); if (!it || it.type !== "video") return;
+    if (pb.playing) { stopVideo(); return; }
+    pb.playing = true; $("pbPlay").textContent = "❚❚"; $("pbPlay").setAttribute("aria-label", "Pause"); $("pbStage").classList.add("playing");
+    var dur = it.duration * 1000, t0 = performance.now(), segI = -1;
+    (function frame(now) {
+      if (!pb.playing) return;
+      var t = now - t0, p = Math.min(1, t / dur);
+      $("pbProg").style.width = (p * 100) + "%";
+      var k = 0; for (var i = 0; i < it.segs.length; i++) if (it.segs[i].t <= t) k = i;
+      if (k !== segI) { segI = k; $("pbImg").src = urlFor(it.segs[k].blob); $("pbLook").textContent = it.segs[k].look || it.look; }
+      if (p >= 1) { stopVideo(); wakePb(); return; }
+      pb.raf = requestAnimationFrame(frame);
+    })(t0);
+  }
+  function step(d) { var k = pb.idx + d; if (k < 0 || k >= pb.list.length) return; pb.idx = k; showItem(); }
+  function askDelete() { var it = current(); if (!it) return; $("pbConfirmText").textContent = "Delete this " + it.type + "? This can't be undone."; $("pbConfirm").hidden = false; $("pbDelYes").focus(); }
+  function doDelete() {
+    var it = current(); if (!it) return;
+    deleteCap(it.id).then(function () {
+      pb.list.splice(pb.idx, 1); $("pbConfirm").hidden = true;
+      if (!pb.list.length) { $("pbViewer").hidden = true; refreshList(); return; }
+      if (pb.idx >= pb.list.length) pb.idx = pb.list.length - 1;
+      showItem(); refreshList(); toast("Deleted");
+    });
+  }
+  function saveCurrent() {
+    var it = current(); if (!it) return;
+    var blob = pb.showOrig ? it.original : it.filtered;
+    var d = new Date(it.ts), pad = function (n) { return String(n).padStart(2, "0"); };
+    var name = "atmos-" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + "-" + it.look.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + (pb.showOrig ? "-original" : "") + ".jpg";
+    var viaClaude = window.claude && typeof window.claude.use === "function" ? window.claude.use("downloads") : Promise.resolve(null);
+    viaClaude.then(function (dl) {
+      if (dl) return dl.save({ filename: name, data: blob }).then(function () { toast("Saved"); }, function (e) { if (e && e.code !== "declined") toast("Saving isn't available here"); });
+      var a = document.createElement("a"); a.href = urlFor(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    });
+  }
+
+  /* ---- Wiring ---- */
+  $("shotBtn").addEventListener("click", capturePhoto);
+  $("recBtn").addEventListener("click", toggleRec);
+  $("flowBtn").addEventListener("click", toggleFlow);
+  $("pbOpenBtn").addEventListener("click", openPlayback);
+  $("pbBtn").addEventListener("click", function (e) { e.stopPropagation(); openPlayback(); });
+  $("powerBtn").addEventListener("click", togglePower);
+  $("vol").addEventListener("input", function (e) { state.vol = e.target.value / 100; $("volVal").textContent = e.target.value; });
+  $("vol").addEventListener("change", function () { tone([880], 0.08, "sine", 0.16); });
+  $("pbClose").addEventListener("click", closePlayback);
+  $("pbBack").addEventListener("click", function () { stopVideo(); $("pbViewer").hidden = true; refreshList(); });
+  $("pbSize").addEventListener("click", requestExpand);
+  $("pbSafeYes").addEventListener("click", function () { pb.safeOk = true; setPbMode("full"); $("pbSize").focus(); });
+  $("pbSafeNo").addEventListener("click", function () { $("pbSafe").hidden = true; $("pbSize").focus(); wakePb(); });
+  ["pointermove", "pointerdown", "focusin", "wheel", "keydown"].forEach(function (ev) { $("playback").addEventListener(ev, wakePb, { passive: true }); });
+  $("pbPrev").addEventListener("click", function () { step(-1); });
+  $("pbNext").addEventListener("click", function () { step(1); });
+  $("pbPlay").addEventListener("click", playVideo);
+  $("pbDel").addEventListener("click", askDelete);
+  $("pbDelYes").addEventListener("click", doDelete);
+  $("pbDelNo").addEventListener("click", function () { $("pbConfirm").hidden = true; $("pbDel").focus(); });
+  $("pbSave").addEventListener("click", saveCurrent);
+  var ob = $("pbOrigBtn");
+  ob.addEventListener("pointerdown", function (e) { e.preventDefault(); try { ob.setPointerCapture(e.pointerId); } catch (x) {} setOrig(true); });
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(function (ev) { ob.addEventListener(ev, function () { setOrig(false); }); });
+  var stage = $("pbStage");
+  stage.addEventListener("pointerdown", function (e) { if (e.target.closest("button")) return; setOrig(true); });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) { stage.addEventListener(ev, function () { setOrig(false); }); });
+  ["pointerdown", "pointermove", "pointerup"].forEach(function (ev) { $("playback").addEventListener(ev, function (e) { e.stopPropagation(); }); $("boot").addEventListener(ev, function (e) { e.stopPropagation(); }); });
+  $("playback").addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+  function handleCaptureKeys(e) {
+    var k = e.key;
+    if (!state.power) return true;
+    if (pb.open) {
+      wakePb();
+      if (k === "Escape") { if (!$("pbSafe").hidden) $("pbSafe").hidden = true; else if (!$("pbConfirm").hidden) $("pbConfirm").hidden = true; else if (!$("pbViewer").hidden) { stopVideo(); $("pbViewer").hidden = true; refreshList(); } else if (pb.mode === "full") setPbMode("glance"); else closePlayback(); }
+      else if (k === "x" || k === "X") requestExpand();
+      else if (!$("pbViewer").hidden) {
+        if (k === "ArrowLeft") step(-1);
+        else if (k === "ArrowRight") step(1);
+        else if (k === " " && !e.repeat) { e.preventDefault(); playVideo(); }
+        else if ((k === "h" || k === "H") && !e.repeat) setOrig(true);
+        else if ((k === "Delete" || k === "Backspace") && pb.mode === "full") askDelete();
+        else return true;
+        e.preventDefault();
+      }
+      else if (k === "p" || k === "P") closePlayback();
+      return true;
+    }
+    if (k === "c" || k === "C") { capturePhoto(); return true; }
+    if (k === "r" || k === "R") { toggleRec(); return true; }
+    if (k === "m" || k === "M") { toggleFlow(); return true; }
+    if (k === "p" || k === "P") { openPlayback(); return true; }
+    return false;
+  }
+  document.addEventListener("keyup", function (e) { if (pb.open && (e.key === "h" || e.key === "H")) setOrig(false); });
+
+  loadCaps();
+  boot(false);
 })();
 </script>
 
