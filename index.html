@@ -683,6 +683,78 @@ html.immersive-lock, html.immersive-lock body { overflow: hidden; overscroll-beh
 #camBtn[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--accent), 0 0 0 1px var(--line); }
 .pb-stage video { max-width: 100%; max-height: 100%; display: block; }
 
+/* ---------- Top bar: volume left, power right ---------- */
+.topbar { display: flex; align-items: center; gap: 16px; border-radius: 18px; padding: 8px 10px 8px 12px; justify-self: center; max-width: 100%; box-sizing: border-box; }
+.view-col > .controls { justify-self: center; max-width: 100%; box-sizing: border-box; }
+.tb-vol { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tb-vol input[type="range"] { flex: 1; min-width: 60px; max-width: 420px; accent-color: var(--accent); }
+.tb-val { font-family: var(--font-mono); font-size: 12px; color: var(--muted); min-width: 3ch; font-variant-numeric: tabular-nums; }
+.cbtn.icon { padding: 7px 9px; }
+#muteBtn[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.tb-vol.muted input[type="range"] { opacity: .45; }
+@media (max-width: 900px), (pointer: coarse) and (max-width: 1100px) {
+  .view-col > .topbar { margin-left: max(16px, env(safe-area-inset-left, 0px)); margin-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .view-col > .topbar, .view-col > .controls { width: auto !important; justify-self: stretch; }
+}
+
+/* ---------- Controls: grouped strip ---------- */
+.controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 16px; border-radius: 20px; padding: 12px 16px 14px; }
+.cgroup { display: grid; gap: 6px; align-content: start; }
+.controls { align-items: flex-start !important; }
+.cgroup.stack .cbtn { width: 100%; }
+kbd.k {
+  margin-left: auto; padding: 1px 6px; min-width: 20px; text-align: center;
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500; line-height: 16px;
+  color: var(--muted); background: var(--bg); border-radius: 5px;
+  box-shadow: inset 0 -1px 0 var(--line), 0 0 0 1px var(--line);
+}
+.cbtn kbd.k { margin-left: 8px; }
+.cgroup.stack .cbtn kbd.k { margin-left: auto; }
+.cbtn.cap[aria-pressed="true"] kbd.k, #powerBtn[aria-pressed="false"] kbd.k, #muteBtn[aria-pressed="true"] kbd.k, .cbtn.holding kbd.k { color: inherit; background: rgba(0,0,0,.15); box-shadow: none; }
+.cswitch.cbtn { cursor: pointer; }
+.cswitch.cbtn:hover, .cswitch.cbtn:active { transform: none; background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)), var(--glass-fill-strong); color: var(--fg); }
+.keys-more { gap: 5px; }
+.km { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.km kbd.k { margin-left: 0; }
+#favCtl .star-ic { fill: none; }
+.cgroup.browse #favCtl { width: 100%; }
+.cgroup.browse #favCtl kbd.k { margin-left: auto; }
+.cbtn.cap[aria-pressed="true"] svg circle { fill: #fff; }
+#favCtl[aria-pressed="true"] { color: #b7801f; }
+#favCtl[aria-pressed="true"] .star-ic { fill: #e3a536; stroke: #e3a536; }
+#adjBtn[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--accent), 0 0 0 1px var(--line); }
+.cg-label { font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding-left: 2px; }
+.cg-row { display: flex; align-items: center; gap: 6px; }
+.cbtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: inherit; font-size: 13px; font-weight: 500; color: var(--fg);
+  padding: 7px 11px; border: 0; border-radius: 999px; cursor: pointer;
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)), var(--glass-fill-strong);
+  box-shadow: inset 0 1px 1px var(--glass-rim-a), 0 0 0 1px var(--line);
+  transition: background 160ms ease, transform 120ms ease;
+}
+.cbtn .ic { flex: none; }
+.cbtn:hover { transform: translateY(-1px); }
+.cbtn:active, .cbtn.holding { transform: scale(.97); background: var(--accent); color: var(--accent-ink); }
+.cbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cbtn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.cbtn.cap[aria-pressed="true"] { background: #ff3b30; color: #fff; }
+#flowBtn[aria-pressed="true"] { box-shadow: inset 0 0 0 2px #d9a23a, 0 0 0 1px var(--line); }
+#powerBtn[aria-pressed="false"] { background: var(--fg); color: var(--bg); }
+#camBtn[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--accent), 0 0 0 1px var(--line); }
+.cswitch { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.cswitch .switch { width: 46px; height: 26px; }
+.cswitch .switch .knob { width: 28px; height: 22px; }
+.cswitch .switch[aria-checked="true"] .knob { left: 16px; }
+.cswitch:has(.switch:disabled) { opacity: .4; }
+.cvol { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+.cvol input[type="range"] { width: 70px; accent-color: var(--accent); }
+.cvol b { display: none; }
+.cap-led { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 13; width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.18); pointer-events: none; transition: background 150ms ease; }
+.cap-led.blink { background: #fff; box-shadow: 0 0 10px 3px rgba(255,255,255,.9); }
+.cap-led.rec { background: #ff3b30; box-shadow: 0 0 10px 2px rgba(255,59,48,.85); animation: recpulse 1s ease-in-out infinite; }
+.viewport.powered-off .cap-led { visibility: hidden; }
+
 /* ---------- Bottom controls bar ---------- */
 .controls {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
@@ -1080,13 +1152,21 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
 <div class="wrap">
   <header>
-    <span class="eyebrow">HCDE 531 · Exploratory prototype v1.4</span>
+    <span class="eyebrow">HCDE 531 · Exploratory prototype v1.7</span>
     <h1>Atmos Frames</h1>
     <p>A simulated view through the glasses. Browse film looks, turn them off, hold to peek at the real scene, and fine-tune any look with basic photo adjustments.</p>
   </header>
 
   <main class="stage">
     <section class="view-col" aria-label="Wearer's view">
+      <div class="topbar glass">
+        <div class="tb-vol">
+          <button type="button" class="cbtn icon" id="muteBtn" aria-pressed="false" title="Mute (U)"><svg class="ic" id="muteIc" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><kbd class="k">U</kbd></button>
+          <input type="range" id="vol" min="0" max="100" value="60" aria-label="Volume">
+          <span class="tb-val" id="volVal">60</span>
+        </div>
+        <button type="button" class="cbtn" id="powerBtn" aria-pressed="true" title="Turn the glasses on or off (Q)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v8M7.1 6.4a7 7 0 1 0 9.8 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="t">Power off</span><kbd class="k">Q</kbd></button>
+      </div>
       <div class="viewport" id="viewport" tabindex="0" role="img" aria-label="Simulated view through Atmos Frames. Press and hold to see the unfiltered scene.">
         <video id="camVideo" playsinline muted hidden></video>
         <canvas class="cam-canvas" id="camCanvas" hidden></canvas>
@@ -1162,6 +1242,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
           </div>
         </aside>
         <div class="flash-fx" id="flashFx" aria-hidden="true"></div>
+        <span class="cap-led" id="capLed" title="Capture light: what people around you see"></span>
         <div class="rec-ind" id="recInd" hidden role="status"><span class="rec-dot"></span>REC <span id="recTime">0:00</span></div>
         <div class="flow-ind" id="flowInd" hidden role="status">Flow marker · <span id="flowCount">0</span></div>
         <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1209,47 +1290,47 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
         </section>
         <div class="boot" id="boot" hidden><span class="boot-mark">ATMOS</span><span class="boot-sub">FRAMES</span><span class="boot-off">Atmos off · lenses clear</span></div>
       </div>
-      <p class="hint">Press and hold the view (or <kbd>Space</kbd>) to peek at the real scene. Swipe on the view or use <kbd>←</kbd> <kbd>→</kbd> to switch looks. <kbd>F</kbd> turns filters on or off. Move over the view to bring the look dock back. Click the <kbd>‹</kbd> on the right edge, swipe in from the right edge, or press <kbd>E</kbd> to open the edit sliders. Tap the star above the chosen look's preview (or press <kbd>S</kbd>) to favorite it; favorites move to the left of Live. <kbd>C</kbd> takes a photo, <kbd>R</kbd> starts and stops video, <kbd>M</kbd> opens and closes a flow marker, and <kbd>P</kbd> opens a small playback glance; <kbd>X</kbd> expands it once you confirm you're somewhere safe.</p>
-
       <div class="controls glass" aria-label="Glasses controls">
-        <div class="switch-row">
-          <span class="lbl"><strong>Filters</strong><small>Tap temple · F</small></span>
-          <button type="button" class="switch" id="toggleBtn" role="switch" aria-checked="true" aria-label="Filters"><span class="knob"></span></button>
+        <div class="cgroup stack">
+          <span class="cg-label">Look</span>
+          <label class="cswitch cbtn" title="Filters on or off (F)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="9" cy="10" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="15" cy="14" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span class="t">Filters</span><button type="button" class="switch" id="toggleBtn" role="switch" aria-checked="true" aria-label="Filters"><span class="knob"></span></button><kbd class="k">F</kbd></label>
+          <button type="button" class="cbtn" id="peekBtn" title="Press and hold to see the real scene (hold Space)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span class="t">Hold to peek</span><kbd class="k">Space</kbd></button>
+          <button type="button" class="cbtn" id="adjBtn" aria-pressed="false" title="Open or close the edit sliders (E)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="7" r="2.2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="10" cy="17" r="2.2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span class="t">Adjust Sliders</span><kbd class="k">E</kbd></button>
         </div>
-        <span class="csep" aria-hidden="true"></span>
-        <button type="button" class="gbtn" id="prevBtn">‹ Previous<small>Swipe back</small></button>
-        <button type="button" class="gbtn" id="nextBtn">Next ›<small>Swipe forward</small></button>
-        <button type="button" class="gbtn" id="peekBtn">Hold to peek<small>Press and hold temple · Space</small></button>
-        <span class="csep" aria-hidden="true"></span>
-        <button type="button" class="gbtn cap" id="shotBtn">Capture photo<small>Tap capture button · C</small></button>
-        <button type="button" class="gbtn cap" id="recBtn" aria-pressed="false">Record video<small>Hold capture button · R</small></button>
-        <button type="button" class="gbtn" id="flowBtn" aria-pressed="false">Flow marker<small>Hand gesture · M</small></button>
-        <button type="button" class="gbtn" id="pbOpenBtn">Playback<small>Double-tap temple · P</small></button>
-        <span class="csep" aria-hidden="true"></span>
-        <div class="led-wrap"><span class="led" id="led" aria-hidden="true"></span><span class="lbl"><strong>Capture light</strong><small id="ledText">Off: nothing is being captured</small></span></div>
-        <button type="button" class="gbtn" id="powerBtn" aria-pressed="true">Power off<small>Hold temple 2 s</small></button>
-        <label class="vol"><span>Volume <b id="volVal">60</b></span><input type="range" id="vol" min="0" max="100" value="60"></label>
-        <span class="csep" aria-hidden="true"></span>
-        <button type="button" class="gbtn" id="camBtn" aria-pressed="false">Use camera<small>Live view · GitHub version</small></button>
-        <label class="file" id="rawLabel">
-          <span class="meta">Raw photo<small id="rawName">Using the default photo</small></span>
-          <span class="pick">Choose</span>
-          <input type="file" id="rawInput" accept="image/*">
-        </label>
-        <label class="file" id="editLabel">
-          <span class="meta">Edited version<small id="editName">Optional · adds "Your edit"</small></span>
-          <span class="pick">Choose</span>
-          <input type="file" id="editInput" accept="image/*">
-        </label>
-        <div class="cstack">
-          <button type="button" class="linkbtn" id="resetBtn" hidden>Back to default photo</button>
-          <label class="check"><input type="checkbox" id="frameToggle"> Glasses frame</label>
+        <div class="cgroup browse">
+          <span class="cg-label">Browse</span>
+          <div class="cg-row">
+            <button type="button" class="cbtn" id="prevBtn" title="Previous look (←)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M14.5 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="t">Prev</span><kbd class="k">←</kbd></button>
+            <button type="button" class="cbtn" id="nextBtn" title="Next look (→)"><span class="t">Next</span><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><kbd class="k">→</kbd></button>
+          </div>
+          <button type="button" class="cbtn" id="favCtl" aria-pressed="false" title="Favorite the current look (S)"><svg class="ic star-ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="t">Favorite Filter</span><kbd class="k">S</kbd></button>
         </div>
+        <div class="cgroup stack">
+          <span class="cg-label">Capture</span>
+          <button type="button" class="cbtn cap" id="shotBtn" title="Take a photo (C)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.6" fill="currentColor"/></svg><span class="t">Photo</span><kbd class="k">C</kbd></button>
+          <button type="button" class="cbtn cap" id="recBtn" aria-pressed="false" title="Start or stop recording (R)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="6.5" fill="#ff3b30"/></svg><span class="t">Record</span><kbd class="k">R</kbd></button>
+          <button type="button" class="cbtn" id="flowBtn" aria-pressed="false" title="Open or close a flow marker (M)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 21V4M5 4h11l-2.5 4L16 12H5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="t">Flow marker</span><kbd class="k">M</kbd></button>
+        </div>
+        <div class="cgroup">
+          <span class="cg-label">Library</span>
+          <button type="button" class="cbtn" id="pbOpenBtn" title="Open playback (P)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg><span class="t">Playback</span><kbd class="k">P</kbd></button>
+        </div>
+        <div class="cgroup stack">
+          <span class="cg-label">Source</span>
+          <button type="button" class="cbtn" id="camBtn" aria-pressed="false" title="Switch between your camera and the sample photo (W)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6H8l1.4-2h5.2L16 6h1.5A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="12.5" r="3.3" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span class="t">Camera View</span><kbd class="k">W</kbd></button>
+          <button type="button" class="cbtn" id="flipCtl" hidden title="Switch between front and back camera (V)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6H8l1.4-2h5.2L16 6h1.5A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.2 12.2a3 3 0 0 1 5.3-1.6M14.8 13.8a3 3 0 0 1-5.3 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="t">Flip camera</span><kbd class="k">V</kbd></button>
+        </div>
+      </div>
+      <div class="legacy" hidden aria-hidden="true">
+        <span class="led" id="led"></span><span id="ledText"></span>
+        <label class="file" id="rawLabel"><small id="rawName"></small><input type="file" id="rawInput" accept="image/*"></label>
+        <label class="file" id="editLabel"><small id="editName"></small><input type="file" id="editInput" accept="image/*"></label>
+        <button type="button" id="resetBtn" hidden></button>
+        <input type="checkbox" id="frameToggle">
       </div>
     </section>
   </main>
 
-  <p class="notes">What's simulated: looks run in the browser on a still photo instead of a live camera. On the default photo, the first five looks are the photographer's own in-camera film simulations, renamed. On any other photo, every look falls back to an Atmos color recipe (tone curves, color balance and grain). Edits apply to whatever you're seeing, Live included, and carry over when you switch looks. Hold to peek and Filters off always show the unedited world. Your photos stay in this browser tab.</p>
 </div>
 
 <script>
@@ -1477,6 +1558,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     $("favRow").setAttribute("aria-pressed", String(fav));
     $("favRow").querySelector(".fav-ico").textContent = fav ? "★" : "☆";
     $("favRowText").textContent = fav ? "Favorited" : "Add to favorites";
+    $("favCtl").setAttribute("aria-pressed", String(fav)); $("favCtl").disabled = !!f.live || !state.power;
+    $("favCtl").title = f.live ? "Live can't be favorited" : (fav ? "Remove " + f.name + " from favorites (S)" : "Favorite " + f.name + " (S)");
     if (active) {
       dockInd.style.left = active.offsetLeft + "px";
       dockInd.style.width = active.offsetWidth + "px";
@@ -1555,6 +1638,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     if (open) wakeDrawer(); else { clearTimeout(drawerIdle); clearTimeout(drawerClose); drawer.classList.remove("idle"); }
     viewport.classList.toggle("editing", open);
     $("editTab").setAttribute("aria-expanded", String(open));
+    $("adjBtn").setAttribute("aria-pressed", String(open));
     $("drawer").setAttribute("aria-hidden", String(!open));
     if (open) dock.classList.add("idle");
   }
@@ -1768,6 +1852,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   }
   function led(mode) {
     var l = $("led"); l.className = "led" + (mode ? " " + mode : "");
+    $("capLed").className = "cap-led" + (mode ? " " + mode : "");
     $("ledText").textContent = mode === "rec" ? "Recording: red light is on" : mode === "blink" ? "Photo taken: light blinked" : "Off: nothing is being captured";
     if (mode === "blink") setTimeout(function () { if (!state.rec) led(""); }, 600);
   }
@@ -1825,7 +1910,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
       if (cam.on) camStartRec(state.rec);
       grabSeg();
       viewport.classList.add("recording"); $("recInd").hidden = false; led("rec");
-      $("recBtn").setAttribute("aria-pressed", "true"); $("recBtn").firstChild.nodeValue = "Stop recording";
+      $("recBtn").setAttribute("aria-pressed", "true"); $("recBtn").querySelector(".t").textContent = "Stop";
       tone([880, 1320], 0.09, "sine", 0.16);
       state.rec.tick = setInterval(function () {
         var s = Math.floor((Date.now() - state.rec.start) / 1000);
@@ -1836,7 +1921,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
       var r = state.rec; state.rec = null;
       clearInterval(r.tick); clearTimeout(segTimer);
       viewport.classList.remove("recording"); $("recInd").hidden = true; led("");
-      $("recBtn").setAttribute("aria-pressed", "false"); $("recBtn").firstChild.nodeValue = "Record video";
+      $("recBtn").setAttribute("aria-pressed", "false"); $("recBtn").querySelector(".t").textContent = "Record";
       $("recTime").textContent = "0:00";
       tone([1320], 0.12, "sine", 0.16);
       var duration = Math.max(1, Math.round((Date.now() - r.start) / 1000));
@@ -1863,12 +1948,12 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     if (!state.flow) {
       state.flow = { id: "f" + Date.now(), count: 0 };
       $("flowCount").textContent = "0"; $("flowInd").hidden = false;
-      $("flowBtn").setAttribute("aria-pressed", "true"); $("flowBtn").firstChild.nodeValue = "Close flow";
+      $("flowBtn").setAttribute("aria-pressed", "true"); $("flowBtn").querySelector(".t").textContent = "Close flow";
       tone([660, 990], 0.08, "triangle", 0.14); toast("Flow marker open");
     } else {
       var n = state.flow.count; state.flow = null;
       $("flowInd").hidden = true;
-      $("flowBtn").setAttribute("aria-pressed", "false"); $("flowBtn").firstChild.nodeValue = "Flow marker";
+      $("flowBtn").setAttribute("aria-pressed", "false"); $("flowBtn").querySelector(".t").textContent = "Flow marker";
       tone([990, 660], 0.08, "triangle", 0.14);
       toast(n ? "Flow moment saved · " + n + (n === 1 ? " capture" : " captures") : "Flow marker closed · nothing captured");
     }
@@ -1876,13 +1961,13 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
   /* ---- Power: boot and shutdown, controls go dead while off ---- */
   var powerTimers = [], powering = false;
-  var POWER_CTRLS = ["toggleBtn", "prevBtn", "nextBtn", "peekBtn", "shotBtn", "recBtn", "flowBtn", "pbOpenBtn"];
+  var POWER_CTRLS = ["toggleBtn", "prevBtn", "nextBtn", "peekBtn", "shotBtn", "recBtn", "flowBtn", "pbOpenBtn", "adjBtn", "favCtl", "flipCtl"];
   function clearPowerTimers() { powerTimers.forEach(clearTimeout); powerTimers = []; }
   function setPowered(on) {
     POWER_CTRLS.forEach(function (id) { $(id).disabled = !on; });
     viewport.classList.toggle("powered-off", !on);
     $("powerBtn").setAttribute("aria-pressed", String(on));
-    $("powerBtn").firstChild.nodeValue = on ? "Power off" : "Power on";
+    $("powerBtn").querySelector(".t").textContent = on ? "Power off" : "Power on";
   }
   function boot(withSound) {
     clearPowerTimers(); powering = true; state.power = false; setPowered(false);
@@ -2125,7 +2210,27 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   $("pbOpenBtn").addEventListener("click", openPlayback);
   $("pbBtn").addEventListener("click", function (e) { e.stopPropagation(); openPlayback(); });
   $("powerBtn").addEventListener("click", togglePower);
-  $("vol").addEventListener("input", function (e) { state.vol = e.target.value / 100; $("volVal").textContent = e.target.value; });
+  /* Keep the top bar and the controls the same width as the view */
+  function syncWidths() {
+    var w = viewport.style.width || "";
+    [document.querySelector(".topbar"), document.querySelector(".controls")].forEach(function (el) { if (el) el.style.width = w; });
+  }
+  new MutationObserver(syncWidths).observe(viewport, { attributes: true, attributeFilter: ["style"] }); syncWidths();
+  $("adjBtn").addEventListener("click", function () { if (state.power && !pb.open) setEditing(!viewport.classList.contains("editing")); });
+  $("favCtl").addEventListener("click", function () { toggleFav(); });
+  $("flipCtl").addEventListener("click", function () { flipCam(); });
+  new MutationObserver(function () { $("flipCtl").hidden = $("camFlip").hidden; }).observe($("camFlip"), { attributes: true, attributeFilter: ["hidden"] });
+  state.volSet = 0.6; state.muted = false;
+  var VOL_ON = '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>', VOL_OFF = '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>';
+  function setMute(m) {
+    state.muted = m; state.vol = m ? 0 : state.volSet;
+    $("muteBtn").setAttribute("aria-pressed", String(m)); $("muteBtn").title = (m ? "Unmute" : "Mute") + " (U)";
+    $("muteIc").innerHTML = m ? VOL_OFF : VOL_ON;
+    document.querySelector(".tb-vol").classList.toggle("muted", m);
+    $("volVal").textContent = m ? "Muted" : Math.round(state.volSet * 100);
+  }
+  $("muteBtn").addEventListener("click", function () { setMute(!state.muted); if (!state.muted) tone([880], 0.08, "sine", 0.16); });
+  $("vol").addEventListener("input", function (e) { state.volSet = e.target.value / 100; if (state.muted && state.volSet > 0) setMute(false); state.vol = state.volSet; $("volVal").textContent = e.target.value; });
   $("vol").addEventListener("change", function () { tone([880], 0.08, "sine", 0.16); });
   $("pbClose").addEventListener("click", closePlayback);
   $("pbBack").addEventListener("click", function () { stopVideo(); $("pbViewer").hidden = true; refreshList(); });
@@ -2151,6 +2256,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
   function handleCaptureKeys(e) {
     var k = e.key;
+    if ((k === "q" || k === "Q") && !e.repeat) { togglePower(); return true; }
+    if ((k === "u" || k === "U") && !e.repeat) { setMute(!state.muted); return true; }
     if (!state.power) return true;
     if (pb.open) {
       wakePb();
@@ -2173,6 +2280,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     if (k === "m" || k === "M") { toggleFlow(); return true; }
     if (k === "p" || k === "P") { openPlayback(); return true; }
     if ((k === "v" || k === "V") && cam.on && !$("camFlip").hidden) { flipCam(); return true; }
+    if ((k === "w" || k === "W") && !e.repeat) { if (cam.on) stopCam(); else startCam(); return true; }
     return false;
   }
   document.addEventListener("keyup", function (e) { if (pb.open && (e.key === "h" || e.key === "H")) setOrig(false); });
@@ -2307,8 +2415,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
       if (!cam.gl && !camInit()) throw new Error("webgl");
       cam.demo = true; cam.on = true; cam.facing = "environment"; cam.cur = cam.prev = camLookId();
       viewport.classList.add("cam"); $("camCanvas").hidden = false; $("camCanvas").classList.remove("mirror");
-      $("camBtn").setAttribute("aria-pressed", "true"); $("camBtn").firstChild.nodeValue = "Use photo";
-      $("camBtn").querySelector("small").textContent = "Demo camera on";
+      $("camBtn").setAttribute("aria-pressed", "true"); $("camBtn").querySelector(".t").textContent = "Camera View";
       $("camFlip").hidden = false; $("camFlip").setAttribute("aria-label", "Switch to front camera");
       camFrame(); wakeLabel(); wakeDock(2600); toast(msg);
     }).catch(function () { stopCam(true); toast("Camera isn't available here. Open the GitHub version to use it."); });
@@ -2323,8 +2430,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
         if (!cam.gl && !camInit()) throw new Error("webgl");
         cam.on = true; cam.cur = cam.prev = camLookId(); afterStream();
         viewport.classList.add("cam"); $("camCanvas").hidden = false;
-        $("camBtn").setAttribute("aria-pressed", "true"); $("camBtn").firstChild.nodeValue = "Use photo";
-        $("camBtn").querySelector("small").textContent = "Back to the sample scene";
+        $("camBtn").setAttribute("aria-pressed", "true"); $("camBtn").querySelector(".t").textContent = "Camera View";
         camFrame(); wakeLabel();
       })
       .catch(function (e) {
@@ -2434,8 +2540,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     cancelAnimationFrame(cam.raf); cam.on = false; cam.demo = false;
     if (cam.stream) cam.stream.getTracks().forEach(function (t) { t.stop(); }); cam.stream = null;
     $("camVideo").srcObject = null; $("camCanvas").hidden = true; viewport.classList.remove("cam"); $("camFlip").hidden = true;
-    $("camBtn").setAttribute("aria-pressed", "false"); $("camBtn").firstChild.nodeValue = "Use camera";
-    $("camBtn").querySelector("small").textContent = "Live view · GitHub version";
+    $("camBtn").setAttribute("aria-pressed", "false"); $("camBtn").querySelector(".t").textContent = "Camera View";
     if (rawImg.naturalWidth) { var ratio = Math.max(1.2, Math.min(2, rawImg.naturalWidth / rawImg.naturalHeight)); viewport.style.aspectRatio = String(ratio); viewport.style.width = "min(100%, " + (84 * ratio).toFixed(1) + "vh)"; }
   }
   $("camBtn").addEventListener("click", function () { if (cam.on) stopCam(); else startCam(); });
