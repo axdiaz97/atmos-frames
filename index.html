@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Atmos Frames">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.5 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -433,11 +437,11 @@ input[type="range"]:disabled { opacity: 0.5; }
 @keyframes recpulse { 50% { opacity: .35; } }
 .flow-ind { right: 16px; color: var(--hud-accent); box-shadow: inset 0 0 0 1px rgba(255,210,122,.6); text-transform: uppercase; }
 .toast {
-  position: absolute; top: 17%; left: 50%; transform: translate(-50%, -4px); z-index: 13;
+  position: absolute; top: 15%; left: 50%; transform: translate(-50%, -4px); z-index: 13; max-width: 60%; overflow: hidden; text-overflow: ellipsis;
   font-size: 12.5px; font-weight: 500; color: #fff; white-space: nowrap;
   padding: 6px 12px; border-radius: 999px;
   background: rgba(16,18,22,.55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  opacity: 0; transition: opacity 220ms ease, transform 220ms ease; pointer-events: none;
+  opacity: 0; transition: opacity 340ms var(--glide), transform 340ms var(--glide); pointer-events: none;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .cap-preview {
@@ -477,8 +481,8 @@ input[type="range"]:disabled { opacity: 0.5; }
   position: absolute; inset: 0; z-index: 20;
   display: flex; flex-direction: column;
   color: #eef0f2;
-  background: rgba(10, 12, 15, 0.82);
-  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  background: rgba(10, 12, 15, 0.5);
+  -webkit-backdrop-filter: blur(22px) saturate(120%); backdrop-filter: blur(22px) saturate(120%);
   cursor: default; touch-action: pan-y;
   animation: pbin 220ms ease;
 }
@@ -508,7 +512,7 @@ input[type="range"]:disabled { opacity: 0.5; }
 .pb-empty { height: 100%; min-height: 160px; display: grid; place-content: center; gap: 6px; text-align: center; color: rgba(255,255,255,.75); }
 .pb-empty strong { font-size: 15px; color: #fff; }
 .pb-empty kbd { background: rgba(255,255,255,.15); color: #fff; box-shadow: none; }
-.pb-viewer { position: absolute; inset: 49px 0 0; display: flex; flex-direction: column; background: rgba(6,7,9,.96); }
+.pb-viewer { position: absolute; inset: 49px 0 0; display: flex; flex-direction: column; background: rgba(6,7,9,.3); }
 .pb-stage { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; overflow: hidden; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 .pb-stage img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
 .pb-stage.playing img { animation: kb 8s linear infinite alternate; }
@@ -526,8 +530,9 @@ input[type="range"]:disabled { opacity: 0.5; }
 .pb-confirm { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 14px; background: rgba(30,32,36,.95); box-shadow: 0 10px 30px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.12); font-size: 13px; white-space: nowrap; }
 
 /* Power overlay is see-through: the wearer always sees the world, even while booting or shutting down */
-.boot { position: absolute; inset: 0; z-index: 30; display: grid; place-content: center; justify-items: center; gap: 6px; background: radial-gradient(ellipse 45% 30% at 50% 50%, rgba(5,6,8,.38), rgba(5,6,8,0) 100%); color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,.6); transition: opacity 500ms ease; cursor: default; }
-.boot::after { content: ""; position: absolute; left: 50%; top: calc(50% + 34px); width: 120px; height: 2px; margin-left: -60px; border-radius: 1px; background: rgba(255,255,255,.25); opacity: 0; }
+/* Center zone (middle half of the view) stays clear: power text sits in the top band */
+.boot { position: absolute; inset: 0; z-index: 30; display: grid; align-content: start; justify-content: center; justify-items: center; gap: 6px; padding-top: max(22px, 6%); background: radial-gradient(ellipse 45% 22% at 50% 10%, rgba(5,6,8,.38), rgba(5,6,8,0) 100%); color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,.6); transition: opacity 500ms ease; cursor: default; }
+.boot::after { content: ""; position: relative; margin-top: 8px; width: 120px; height: 2px; border-radius: 1px; background: rgba(255,255,255,.25); opacity: 0; }
 .boot.booting::after { opacity: 1; background: linear-gradient(90deg, #fff 0 var(--p, 0%), rgba(255,255,255,.25) var(--p, 0%)); animation: bootbar 1300ms ease-out forwards; }
 @property --p { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
 @keyframes bootbar { to { --p: 100%; } }
@@ -651,6 +656,10 @@ input[type="range"]:disabled { opacity: 0.5; }
 @keyframes flipspin { to { transform: rotateY(180deg); } }
 .viewport.pb-open .hud-btn, .viewport.powered-off .hud-btn, .viewport.editing .cam-flip { visibility: hidden; }
 .viewport:has(.flow-ind:not([hidden])) .fs-btn { top: 52px; }
+/* Full-screen button steps aside while the panel is open or any control is in use */
+.viewport.editing .fs-btn, .viewport.busy .fs-btn { opacity: 0 !important; pointer-events: none !important; }
+/* Landscape phones: drop the page title so the view gets the whole height */
+@media (orientation: landscape) and (max-height: 520px) and (pointer: coarse) { .wrap > header { display: none; } }
 
 /* Phones and tablets: the view goes edge to edge and fills the screen, in portrait or landscape */
 @media (max-width: 900px), (pointer: coarse) and (max-width: 1100px) {
@@ -666,7 +675,7 @@ input[type="range"]:disabled { opacity: 0.5; }
   }
   .view-col > .viewport.recording { box-shadow: none; }
   .playback.glance { width: 64%; max-width: 64%; max-height: 30%; }
-  .drawer { width: min(216px, 58%); }
+  .viewport { --drawer-w: min(calc(216px * var(--ds, 1)), 58%); }
   .hint { padding-inline: 4px; }
 }
 @media (max-width: 900px), (pointer: coarse) and (max-width: 1100px) { html, body { overflow-x: clip; } }
@@ -789,30 +798,29 @@ kbd.k {
 .viewport.editing .edit-tab { opacity: 0 !important; pointer-events: none !important; }
 
 .drawer {
-  position: absolute; top: 50%; right: 12px;
-  width: min(216px, 46%);
-  max-height: calc(100% - 24px);
+  position: absolute; top: 12px; bottom: 12px; right: 12px;
+  width: var(--drawer-w);
   display: flex; flex-direction: column;
   color: #eef0f2;
   border-radius: 16px;
   background: rgba(16, 18, 22, 0.36);
   -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), 0 10px 30px rgba(0,0,0,.25);
-  transform: translate(calc(100% + 24px), -50%);
+  transform: translateX(calc(100% + 24px));
   opacity: 0;
-  transition: transform 360ms cubic-bezier(.2,.9,.25,1), opacity 600ms ease, background 200ms ease, box-shadow 200ms ease;
+  transition: transform 460ms var(--glide), opacity 460ms var(--glide), background 200ms ease, box-shadow 200ms ease;
   font-size: 12.5px;
   cursor: default;
   touch-action: pan-y;
 }
-.viewport.editing .drawer { transform: translate(0, -50%); opacity: 1; }
+.viewport.editing .drawer { transform: translateX(0); opacity: 1; }
 .viewport.editing .drawer.idle { opacity: 0.4; }
 .drawer.focus { background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-.drawer.focus .drawer-head, .drawer.focus .dsec-head, .drawer.focus .lr-row:not(.active) { opacity: 0; }
+.drawer.focus .drawer-head, .drawer.focus .drawer-resetbar, .drawer.focus .dsec-head, .drawer.focus .lr-row:not(.active) { opacity: 0; }
 .drawer.focus .lr-row.active { text-shadow: 0 1px 6px rgba(0,0,0,.8); }
 .drawer-head, .dsec-head, .lr-row { transition: opacity 180ms ease; }
 .hud-label { transition: opacity 1200ms ease, transform 1200ms ease, left 360ms cubic-bezier(.2,.9,.25,1); }
-.viewport.editing .hud-label { left: calc((100% - min(216px, 46%) - 12px) / 2); max-width: calc(100% - min(216px, 46%) - 28px); }
+.viewport.editing .hud-label { left: calc((100% - var(--drawer-w) - 12px) / 2); max-width: calc(100% - var(--drawer-w) - 28px); }
 .drawer-head {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 10px 8px 8px;
@@ -823,15 +831,16 @@ kbd.k {
   color: #fff; background: rgba(255,255,255,.08); border: 0; border-radius: 8px; cursor: pointer;
 }
 .drawer-close:hover { background: rgba(255,255,255,.16); }
-.drawer-title { font-weight: 600; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; flex: 1; }
-.drawer-reset { font: inherit; font-size: 12px; color: var(--hud-accent); background: none; border: 0; cursor: pointer; padding: 4px; }
+.drawer-title { font-weight: 600; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drawer-resetbar { padding: 6px 12px 7px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.drawer-reset { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 11.5px; color: var(--hud-accent); background: none; border: 0; cursor: pointer; padding: 2px 0; }
+.drawer-reset:hover { color: #fff; }
 .drawer-close:focus-visible, .drawer-reset:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 1px; }
 .drawer-body { overflow-y: auto; padding: 0 12px 6px; display: grid; scrollbar-width: thin; }
 .dsec.disabled .dsec-body { opacity: .35; pointer-events: none; }
 .dsec { border-bottom: 1px solid rgba(255,255,255,.1); }
 .dsec:last-child { border-bottom: 0; }
-.dsec-body { display: none; gap: 8px; padding: 2px 0 12px; }
-.dsec.open .dsec-body { display: grid; }
+.dsec-body { display: grid; gap: 8px; }
 .dsec-head {
   width: 100%; display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
   font: inherit; color: inherit; background: none; border: 0; padding: 10px 0; cursor: pointer; text-align: left;
@@ -846,7 +855,47 @@ kbd.k {
 
 .lr-row { display: grid; gap: 2px; }
 .lr-top { display: flex; justify-content: space-between; align-items: baseline; }
-.lr-top label { color: rgba(255,255,255,.88); cursor: default; user-select: none; }
+.lr-top label { color: rgba(255,255,255,.88); cursor: default; user-select: none; flex: 1; }
+.lr-top { gap: 6px; }
+.lr-row[hidden] { display: none !important; }
+.lr-del { flex: none; width: 18px; height: 18px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; cursor: pointer; font: inherit; font-size: 13px; line-height: 1; color: rgba(255,255,255,.55); background: rgba(255,255,255,.08); opacity: 0; transition: opacity 150ms ease; }
+.lr-row:hover .lr-del, .lr-del:focus-visible { opacity: 1; }
+@media (hover: none) { .lr-del { opacity: .8; } }
+.lr-del:hover { background: rgba(255,99,90,.35); color: #fff; }
+.lr-del:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 1px; }
+.lr-addbar { display: grid; gap: 6px; padding-top: 4px; }
+.lr-add { justify-self: start; font: inherit; font-size: 11.5px; color: var(--hud-accent); background: none; border: 0; padding: 2px 0; cursor: pointer; }
+.lr-add:disabled { color: rgba(255,255,255,.4); cursor: default; }
+.lr-add:focus-visible, .lr-add-chip:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 2px; }
+.lr-add { display: inline-flex; align-items: center; gap: 5px; }
+.lr-add .car { font-size: 9px; transition: transform 200ms ease; }
+.lr-add[aria-expanded="true"] .car { transform: rotate(180deg); }
+.lr-add:disabled .car { display: none; }
+.lr-add-car { overflow: hidden; display: grid; grid-template-rows: 1fr; transition: grid-template-rows 220ms ease, opacity 220ms ease; }
+.lr-add-car[hidden] { display: none; }
+.lr-add-track {
+  display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 18px 4px 1px;
+  scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 78%, transparent); mask-image: linear-gradient(90deg, #000 78%, transparent);
+}
+.lr-add-track::-webkit-scrollbar { display: none; }
+.lr-add-tile {
+  flex: none; width: 66px; height: 50px; scroll-snap-align: start; display: grid; place-items: center; align-content: center; gap: 5px;
+  font: inherit; font-size: 10.5px; color: rgba(255,255,255,.85); background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12); border-radius: 8px; cursor: pointer; transition: background 150ms ease, border-color 150ms ease;
+}
+.lr-add-tile svg { opacity: .7; }
+.lr-add-tile:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.28); }
+.lr-add-tile:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 1px; }
+/* Section states: unselected / hover preview / selected (pinned) */
+.dsec { position: relative; margin: 0 -8px; padding: 0 8px; border-radius: 10px; transition: background 180ms ease; }
+.dsec::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; background: var(--hud-accent); opacity: 0; transition: opacity 180ms ease; }
+.dsec.peek:not(.open) { background: rgba(255,255,255,.035); }
+.dsec.peek:not(.open) .dsec-body { opacity: .78; }
+.dsec.peek:not(.open) .dsec-head::after { content: "Tap to keep"; font-size: 9.5px; letter-spacing: .04em; color: rgba(255,255,255,.5); }
+.dsec.open { background: rgba(255,255,255,.07); }
+.dsec.open::before { opacity: 1; }
+.dsec.open .dsec-head span { color: #fff; }
+.dsec.open .dsec-head::after { color: var(--hud-accent); }
 .lr-val { font-family: var(--font-mono); font-size: 11.5px; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.6); min-width: 5ch; text-align: right; }
 .lr-val.changed { color: var(--hud-accent); }
 input.lr {
@@ -1045,6 +1094,210 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   .fx, .vig, .frame, .hud-peek, .bar i, .dock, .dock-ind, .flash, .switch .knob, .gbtn { transition: none; }
 }
+
+/* Portrait phones/tablets: ask to rotate (the glasses' view is landscape) */
+.rotate-prompt { display: none; }
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
+  html:not(.rotate-ok) .rotate-prompt {
+    display: grid; position: fixed; inset: 0; z-index: 1000; place-items: center; padding: 32px 28px;
+    color: #eef0f2; background: rgba(10,12,15,.9); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); text-align: center;
+  }
+  html:not(.rotate-ok) body { overflow: hidden; }
+}
+.rotate-card { display: grid; justify-items: center; gap: 14px; max-width: 300px; }
+.rotate-card svg { color: var(--hud-accent); animation: rotphone 2.4s ease-in-out infinite; }
+@keyframes rotphone { 0%, 25% { transform: rotate(0deg); } 55%, 85% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
+@media (prefers-reduced-motion: reduce) { .rotate-card svg { animation: none; transform: rotate(-90deg); } }
+.rotate-card h2 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -.01em; text-transform: none; color: #fff; }
+.rotate-card p { margin: 0; font-size: 14px; line-height: 1.5; color: rgba(255,255,255,.72); }
+.rotate-skip { margin-top: 6px; font: inherit; font-size: 13px; color: rgba(255,255,255,.6); background: none; border: 0; padding: 8px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* ---------- Safety: low-light warning, Terrain Assist, sensor fault, capture light ---------- */
+.dusk-fx { position: absolute; inset: 0; z-index: 4; pointer-events: none; background: rgba(3, 6, 14, .67); opacity: 0; transition: opacity 900ms ease; }
+.viewport.dusk .dusk-fx { opacity: 1; }
+.terrain { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; opacity: 0; transition: opacity 400ms ease; }
+.viewport.ta-on .terrain { opacity: var(--ta, .7); }
+.terrain .haz { fill: rgba(255, 214, 140, .14); stroke: #ffd27a; stroke-width: .35; stroke-dasharray: 1.2 .8; filter: drop-shadow(0 0 1px rgba(255, 200, 110, .9)); }
+.terrain .haz-label { font: 600 2px var(--font-sans, system-ui); fill: #ffe3a8; letter-spacing: .05px; paint-order: stroke; stroke: rgba(0,0,0,.55); stroke-width: .4px; }
+.viewport.cam .terrain .haz, .viewport.cam .terrain .haz-label { display: none; }
+.terrain .ground { mix-blend-mode: screen; }
+.vis-glow { position: absolute; inset: 0; z-index: 12; pointer-events: none; border-radius: inherit; opacity: 0; transition: opacity 600ms ease;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 196, 100, .55), inset 0 0 46px rgba(255, 176, 70, .32); }
+.viewport.lowlight-warn .vis-glow { opacity: 1; animation: visglow 2.6s ease-in-out infinite; }
+@keyframes visglow { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .viewport.lowlight-warn .vis-glow { animation: none; } }
+.safety-stack { position: absolute; top: 16px; left: 16px; z-index: 14; display: grid; gap: 6px; justify-items: start; max-width: min(46%, 340px); pointer-events: none; transition: top 200ms ease; }
+.viewport:has(.rec-ind:not([hidden])) .safety-stack { top: 52px; }
+.viewport.editing .safety-stack { max-width: calc(100% - var(--drawer-w) - 44px); }
+.viewport.pb-open .safety-stack, .viewport.powered-off .safety-stack, .viewport.powered-off .vis-glow, .viewport.powered-off .terrain { visibility: hidden; }
+.s-pill { pointer-events: auto; display: flex; align-items: center; gap: 8px; padding: 5px 6px 5px 10px; border-radius: 12px; font-size: 12px; line-height: 1.3; color: #fff;
+  background: rgba(16, 18, 22, .5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+  touch-action: pan-y; user-select: none; -webkit-user-select: none; transition: transform 280ms var(--glide), opacity 280ms var(--glide); animation: pillin 420ms var(--glide); }
+.s-pill.out { opacity: 0; transform: translateY(6px); }
+@keyframes pillin { from { opacity: 0; transform: translateY(8px); } }
+.s-pill.warn { box-shadow: inset 0 0 0 1px rgba(255, 210, 122, .6); }
+.s-pill .s-ic { flex: none; color: var(--hud-accent); display: grid; }
+.s-pill .s-txt { min-width: 0; }
+.s-pill .s-txt b { font-weight: 600; }
+.s-pill .s-txt small { display: block; font-size: 10.5px; color: rgba(255,255,255,.62); }
+.s-act { flex: none; font: inherit; font-size: 11.5px; font-weight: 600; color: #1b1406; background: var(--hud-accent); border: 0; border-radius: 8px; padding: 4px 8px; cursor: pointer; }
+.s-act.ghost { color: #fff; background: rgba(255,255,255,.12); font-weight: 500; }
+.s-x { flex: none; width: 22px; height: 22px; display: grid; place-items: center; font: inherit; font-size: 14px; line-height: 1; color: rgba(255,255,255,.7); background: none; border: 0; border-radius: 6px; cursor: pointer; padding: 0; }
+.s-x:hover, .s-act.ghost:hover { background: rgba(255,255,255,.16); color: #fff; }
+.s-act:focus-visible, .s-x:focus-visible, .ta-op:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 1px; }
+.ta-op { width: 74px; accent-color: #ffd27a; }
+.cap-led.covered { background: rgba(255, 210, 122, .25); box-shadow: 0 0 0 2px rgba(255, 210, 122, .75); }
+.cgroup.safety .cbtn, .cgroup.sim .cbtn { width: 100%; }
+.cgroup.safety kbd.k, .cgroup.sim kbd.k { margin-left: auto; }
+.cbtn[aria-pressed="true"].sim-btn { box-shadow: inset 0 0 0 2px var(--hud-accent, #ffd27a), 0 0 0 1px var(--line); }
+
+/* ---------- Curved, endless look wheel: small and low, the chosen look widens ---------- */
+.dock[data-style="carousel"] { bottom: 2%; width: 84%; height: var(--dock-h); padding: 0; }
+.viewport { --dock-h: clamp(84px, 11vw, 112px); }
+.dock[data-style="carousel"] .dock-scroll {
+  position: relative; height: 100%; overflow: visible; padding: 0; display: block;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+}
+.dock[data-style="carousel"]::after { bottom: 3px; }
+.dock[data-style="carousel"] .chip {
+  position: absolute; left: 50%; bottom: 34px; padding: 0 2px; gap: 4px;
+  transform: translateX(-50%) translateX(var(--x, 0px)) translateY(var(--y, 0px)) rotate(var(--r, 0deg)) scale(var(--s, 1));
+  transform-origin: 50% 100%; opacity: var(--o, 1);
+  transition: transform 440ms var(--glide), opacity 380ms var(--glide), color 240ms ease;
+}
+.dock[data-style="carousel"] .chip[aria-pressed="true"], .dock[data-style="carousel"] .chip.is-active { transform: translateX(-50%) translateX(var(--x, 0px)) translateY(var(--y, 0px)) rotate(var(--r, 0deg)) scale(var(--s, 1)); }
+.dock[data-style="carousel"] .chip.far { pointer-events: none; }
+.dock[data-style="carousel"] .chip .thumb {
+  width: clamp(26px, 3vw, 36px); aspect-ratio: 1; border-radius: 5px;
+  transition: width 440ms var(--glide), aspect-ratio 440ms var(--glide), box-shadow 240ms ease;
+}
+.dock[data-style="carousel"] .chip.is-active .thumb { width: clamp(54px, 6.2vw, 74px); aspect-ratio: 3 / 2; border-radius: 6px; box-shadow: 0 0 0 1px rgba(255,255,255,.55), 0 6px 16px rgba(0,0,0,.45); }
+.dock[data-style="carousel"] .chip .nm { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 5px; text-align: center; font-size: clamp(9.5px, 1vw, 11px); opacity: 0; pointer-events: none; transition: opacity 220ms ease; }
+.dock[data-style="carousel"] .chip.is-active .nm { opacity: 1; }
+.dock[data-style="carousel"] .chip .star { height: 10px; font-size: 10px; }
+.dock[data-style="carousel"] .chip.is-active .star { height: 13px; font-size: 13px; }
+.dock[data-style="carousel"] .dock-sep.fav-sep { position: absolute; bottom: 36px; height: 26px; margin: 0; left: 50%; transition: transform 340ms cubic-bezier(.2,.8,.2,1), opacity 300ms ease; }
+/* Warnings come up from the bottom center, just above the look wheel; nothing interactive sits there */
+.safety-stack { top: auto !important; left: 50%; bottom: calc(2% + var(--dock-h) + 6px); transform: translateX(-50%); justify-items: center; width: max-content; max-width: min(90%, 560px); transition: left 360ms cubic-bezier(.2,.9,.25,1); }
+.viewport.editing .safety-stack { left: calc((100% - var(--drawer-w) - 12px) / 2); max-width: calc(100% - var(--drawer-w) - 44px); }
+/* Playback lives in the top-left corner, like a camera's review button */
+.pb-btn { top: 16px; bottom: auto; }
+.rec-ind { left: 72px; }
+.cap-preview { top: 16px; bottom: auto; transform-origin: left top; }
+.playback.glance { inset: 16px auto auto 16px; }
+
+/* 1.8: movement notice over expanded playback, rising from the bottom center */
+.move-warn { position: absolute; left: 0; right: 0; margin: 0 auto; bottom: calc(2% + var(--dock-h) + 6px); z-index: 25; width: max-content; max-width: min(90%, 540px); }
+.viewport.powered-off .move-warn { visibility: hidden; }
+
+/* 1.9: Low-visibility mode moves the Exposure, Shadows and Noise reduction sliders (no hidden filter) */
+.lv-tag { position: absolute; top: 22px; right: 72px; z-index: 13; display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--hud-accent); background: rgba(16,18,22,.45); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 0 0 1px rgba(255,210,122,.5); pointer-events: auto; padding-right: 4px; }
+.lv-x { display: grid; place-items: center; width: 20px; height: 20px; margin-left: 2px; padding: 0; border: 0; border-radius: 50%; font: inherit; font-size: 13px; line-height: 1; color: #fff; background: rgba(255,255,255,.14); cursor: pointer; transition: background 240ms var(--glide); }
+.lv-x:hover { background: rgba(255,255,255,.3); }
+.lv-x:focus-visible, .lv-off:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 1px; }
+.lv-tag { animation: pillin 420ms var(--glide); transition: opacity 280ms var(--glide), transform 280ms var(--glide), right 460ms var(--glide); }
+.lv-tag.out { opacity: 0; transform: translateY(-4px); }
+.drawer-lvbar { display: flex; align-items: center; gap: 8px; padding: 6px 12px 7px; font-size: 11.5px; color: var(--hud-accent); border-bottom: 1px solid rgba(255,255,255,.1); }
+.drawer-lvbar:not([hidden]) { animation: rowin 380ms var(--glide); }
+.drawer-lvbar span { flex: 1; }
+.lv-off { font: inherit; font-size: 11.5px; font-weight: 600; color: #1b1406; background: var(--hud-accent); border: 0; border-radius: 7px; padding: 3px 9px; cursor: pointer; }
+.viewport:has(.flow-ind:not([hidden])) .lv-tag { top: 56px; }
+.viewport.editing .lv-tag { right: calc(var(--drawer-w) + 24px); transition: right 360ms ease; }
+.viewport.pb-open .lv-tag, .viewport.powered-off .lv-tag { visibility: hidden; }
+.safety-stack .s-pill { max-width: 100%; }
+
+/* Exposure meter: where the view sits against neutral, like a camera's EV scale */
+.ev-meter { display: grid; gap: 3px; padding: 2px 0 6px; border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 2px; }
+.ev-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 11px; color: rgba(255,255,255,.7); }
+.ev-top b { font-weight: 600; font-family: var(--font-mono); font-size: 11px; color: #fff; }
+.ev-top b.off { color: var(--hud-accent); }
+.ev-auto { margin-left: 6px; font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--hud-accent); }
+.ev-scale { position: relative; height: 14px; }
+.ev-scale::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.45) 0 1px, transparent 1px calc((100% - 1px) / 18)); }
+.ev-scale::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 10px;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.85) 0 1.5px, transparent 1.5px calc((100% - 1.5px) / 6)); }
+.ev-zero { position: absolute; left: calc(50% - 1px); bottom: 0; width: 2px; height: 13px; background: #fff; border-radius: 1px; }
+.ev-mark { position: absolute; top: -2px; left: 50%; width: 0; height: 0; transform: translateX(-50%); border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--hud-accent); transition: left 400ms cubic-bezier(.2,.8,.2,1); filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
+.ev-nums { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 9px; color: rgba(255,255,255,.55); margin: 0 -3px; }
+.lv-tag .ev { font-family: var(--font-mono); font-weight: 500; color: #fff; }
+
+/* HUD exposure meter: a minimal 7-tick scale (-3 to +3 EV) with one marker */
+.hud-meter { position: absolute; z-index: 13; display: flex; align-items: center; gap: 8px; pointer-events: none; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.7); opacity: 0; transition: opacity 300ms ease; }
+.viewport.meter-on .hud-meter { opacity: 1; }
+.hud-meter { transition: opacity 520ms var(--glide), left 360ms var(--glide); }
+.hm-scale { position: relative; width: 112px; height: 9px; }
+.hm-scale i { position: absolute; bottom: 0; width: 1px; height: 5px; background: rgba(255,255,255,.7); box-shadow: 0 0 3px rgba(0,0,0,.6); }
+.hm-scale i.z { height: 9px; width: 1.5px; background: #fff; }
+.hm-mark { position: absolute; top: -5px; left: 50%; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--hud-accent); box-shadow: 0 0 4px rgba(0,0,0,.7); transition: left 160ms linear; }
+.hm-val { font-family: var(--font-mono); font-size: 10.5px; min-width: 4.2ch; letter-spacing: .02em; }
+.hm-val.off { color: var(--hud-accent); }
+.hm-auto { font-size: 9px; letter-spacing: .12em; color: var(--hud-accent); }
+.hud-meter[data-pos="top"] { top: calc(6% + 56px); left: 50%; transform: translateX(-50%); }
+.hud-meter[data-pos="bottom"] { bottom: 5px; left: 50%; transform: translateX(-50%); }
+.hud-meter[data-pos="corner"] { bottom: 22px; left: 18px; }
+.viewport:has(.hud-meter[data-pos="bottom"]) .dock[data-style="carousel"]::after { display: none; }
+.viewport:has(.hud-meter[data-pos="bottom"]) .dock[data-style="carousel"] { bottom: calc(2% + 20px); }
+.viewport:has(.hud-meter[data-pos="bottom"]) .safety-stack { bottom: calc(2% + var(--dock-h) + 26px); }
+.viewport.editing .hud-meter[data-pos="top"], .viewport.editing .hud-meter[data-pos="bottom"] { left: calc((100% - var(--drawer-w) - 12px) / 2); }
+.viewport.pb-open .hud-meter, .viewport.powered-off .hud-meter { visibility: hidden; }
+
+/* ---------- Motion: one shared ease (slow start, soft landing) across the interface ---------- */
+:root { --glide: cubic-bezier(.65, 0, .35, 1); }
+.dsec-body { max-height: 0; opacity: 0; padding: 0; overflow: hidden; visibility: hidden;
+  transition: max-height 420ms var(--glide), opacity 260ms var(--glide), padding 420ms var(--glide), visibility 0s linear 420ms; }
+.dsec.open .dsec-body, .dsec.peek .dsec-body { max-height: 860px; opacity: 1; padding: 2px 0 12px; visibility: visible;
+  transition: max-height 520ms var(--glide), opacity 420ms var(--glide) 60ms, padding 420ms var(--glide), visibility 0s; }
+.dsec.peek:not(.open) .dsec-body { opacity: .78; }
+.dsec.disabled.open .dsec-body, .dsec.disabled.peek .dsec-body { opacity: .35; }
+.dsec, .dsec::before, .dsec-head span, .dsec-head::after { transition: background 320ms var(--glide), opacity 320ms var(--glide), color 320ms var(--glide); }
+.lr-row { max-height: 64px; transition: max-height 380ms var(--glide), opacity 300ms var(--glide), transform 380ms var(--glide); }
+.lr-row.leaving, .lr-row.entering { max-height: 0; opacity: 0; transform: translateY(-6px); overflow: hidden; }
+@keyframes tilein { from { opacity: 0; transform: translateY(6px) scale(.96); } }
+.lr-add-car:not([hidden]) .lr-add-tile { animation: tilein 380ms var(--glide) both; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes rowin { from { opacity: 0; transform: translateY(-4px); } }
+.drawer-resetbar:not([hidden]) { animation: rowin 380ms var(--glide); }
+.lr-add .car { transition: transform 380ms var(--glide); }
+@media (prefers-reduced-motion: reduce) {
+  .dsec-body, .lr-row, .s-pill, .lr-add-tile, .drawer, .drawer-resetbar, .hud-meter, .toast { transition-duration: 1ms !important; animation-duration: 1ms !important; animation-delay: 0ms !important; }
+}
+
+/* 2.2 Recipes: a look plus your sliders, saved as one more thumbnail in the wheel (amber dot) */
+.look-rows { display: flex; flex-wrap: wrap; gap: 6px; }
+.dock[data-style="carousel"] .chip.rcp .star { visibility: hidden; }
+.chip.rcp .thumb::after { content: ""; position: absolute; top: 3px; right: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--hud-accent); box-shadow: 0 0 0 1.5px rgba(0,0,0,.55); }
+/* Step by step: things with several parts arrive one after another */
+@keyframes stepin { from { opacity: 0; transform: translateY(-10px); } }
+.viewport.editing .drawer-head, .viewport.editing .drawer-lvbar:not([hidden]), .viewport.editing .drawer-resetbar:not([hidden]), .viewport.editing .drawer-body > .dsec {
+  animation: stepin 460ms var(--glide) backwards; animation-delay: calc(var(--n, 0) * 70ms + 160ms); }
+.dsec.open .dsec-body > *, .dsec.peek .dsec-body > * { animation: stepin 420ms var(--glide) backwards; animation-delay: calc(var(--n, 0) * 50ms + 90ms); }
+.dsec.open .dsec-body > [hidden], .dsec.peek .dsec-body > [hidden] { animation: none; }
+@media (prefers-reduced-motion: reduce) { .viewport.editing .drawer *, .dsec-body > * { animation: none !important; } }
+
+/* 2.3 + section 3: one size control for every panel (A- / A+, or pinch), remembered per panel */
+.viewport { --drawer-w: min(calc(216px * var(--ds, 1)), 52%); }
+@media (max-width: 900px), (pointer: coarse) and (max-width: 1100px) { .viewport { --drawer-w: min(calc(216px * var(--ds, 1)), 58%); } }
+.drawer > * { zoom: var(--ds, 1); }
+.sz { display: inline-flex; gap: 2px; flex: none; }
+.sz-b { width: 26px; height: 22px; padding: 0; border: 0; border-radius: 6px; font: 600 10.5px/1 var(--font-sans, system-ui); letter-spacing: 0; color: #fff; background: rgba(255,255,255,.1); cursor: pointer; transition: background 240ms var(--glide), opacity 240ms var(--glide); }
+.sz-b:hover { background: rgba(255,255,255,.22); }
+.sz-b:disabled { opacity: .3; cursor: default; }
+.sz-b:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 1px; }
+.sz-flash { animation: szflash 700ms var(--glide); }
+@keyframes szflash { 30% { box-shadow: inset 0 0 0 1px rgba(255,210,122,.8), 0 10px 30px rgba(0,0,0,.25); } }
+.playback.glance { width: min(calc(42% * var(--ps, 1)), 66%); max-width: 66%; max-height: min(calc(40% * var(--ps, 1)), 60%); transition: opacity 600ms ease, width 420ms var(--glide), max-height 420ms var(--glide); }
+.pb-glance .pb-thumb { height: calc(clamp(44px, 7vh, 64px) * var(--ps, 1)); }
+.pb-all { grid-template-columns: repeat(auto-fill, minmax(calc(130px * var(--ps, 1)), 1fr)); }
+.pb-strip .pb-thumb { width: calc(clamp(110px, 16%, 160px) * var(--ps, 1)); }
+.drawer { transition: transform 460ms var(--glide), opacity 460ms var(--glide), width 420ms var(--glide), background 200ms ease, box-shadow 200ms ease; }
+/* 3.3: previews you can open lift and outline on hover or focus */
+.pb-thumb { transition: transform 260ms var(--glide), box-shadow 260ms var(--glide); }
+.pb-thumb:hover, .pb-thumb:focus-visible { transform: translateY(-2px) scale(1.03); box-shadow: 0 0 0 2px var(--hud-accent), 0 6px 16px rgba(0,0,0,.45); outline: none; z-index: 1; }
+.pb-thumb:hover img { opacity: 1; }
+.pb-thumb::after { content: "Open"; position: absolute; left: 6px; top: 6px; font-size: 10px; font-weight: 600; letter-spacing: .06em; color: #1b1406; background: var(--hud-accent); padding: 1px 6px; border-radius: 5px; opacity: 0; transform: translateY(-3px); transition: opacity 240ms var(--glide), transform 240ms var(--glide); pointer-events: none; }
+.pb-thumb:hover::after, .pb-thumb:focus-visible::after { opacity: 1; transform: none; }
+.pb-glance .pb-thumb::after { display: none; }
 </style>
 
 <div class="ambient" id="ambient" aria-hidden="true"></div>
@@ -1052,6 +1305,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 <svg class="svg-defs" aria-hidden="true" focusable="false">
   <!-- Live adjustments: rebuilt from the Adjust sliders -->
   <filter id="f-adjust" color-interpolation-filters="sRGB">
+    <feGaussianBlur id="adjNR" stdDeviation="0"/>
     <feColorMatrix id="adjSat" type="saturate" values="1"/>
     <feComponentTransfer>
       <feFuncR id="adjR" type="table" tableValues="0 1"/>
@@ -1152,7 +1406,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 
 <div class="wrap">
   <header>
-    <span class="eyebrow">HCDE 531 · Exploratory prototype v1.7</span>
+    <span class="eyebrow">HCDE 531 · Exploratory prototype v1.9</span>
     <h1>Atmos Frames</h1>
     <p>A simulated view through the glasses. Browse film looks, turn them off, hold to peek at the real scene, and fine-tune any look with basic photo adjustments.</p>
   </header>
@@ -1181,6 +1435,45 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
           <div class="fx" id="fxA"><img class="layer" alt=""><div class="grain"></div></div>
           <div class="fx" id="fxB"><img class="layer" alt=""><div class="grain"></div></div>
           <div class="vig" id="vig"></div>
+        </div>
+        <div class="dusk-fx" id="duskFx" aria-hidden="true"></div>
+        <svg class="terrain" id="terrain" viewBox="0 0 150 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs><linearGradient id="taGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".55" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity=".34"/></linearGradient></defs>
+          <rect class="ground" x="0" y="60" width="150" height="40" fill="url(#taGround)"/>
+          <path class="haz" d="M4 79 Q14 72 30 75 Q44 79 46 86 Q40 94 22 95 Q6 94 3 88 Z"/>
+          <text class="haz-label" x="9" y="77.4">Rocky bank</text>
+          <path class="haz" d="M108 92 Q118 84 134 85 Q148 87 149 96 L149 100 L106 100 Z"/>
+          <text class="haz-label" x="118" y="83.2">Loose rocks</text>
+        </svg>
+        <div class="vis-glow" aria-hidden="true"></div>
+        <div class="hud-meter" id="hudMeter" data-pos="bottom" aria-hidden="true"><span class="hm-scale"><i style="left:0"></i><i style="left:16.66%"></i><i style="left:33.33%"></i><i class="z" style="left:calc(50% - .75px)"></i><i style="left:66.66%"></i><i style="left:83.33%"></i><i style="left:calc(100% - 1px)"></i><span class="hm-mark" id="hmMark"></span></span><span class="hm-val" id="hmVal">0.0</span><span class="hm-auto" id="hmAuto" hidden>AUTO</span></div>
+        <span class="lv-tag" id="lvTag" hidden><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg>Low-vis <span class="ev" id="lvEv"></span><button type="button" class="lv-x" id="lvX" aria-label="Turn off low-visibility mode" title="Turn off low-visibility mode (N)">×</button></span>
+        <div class="s-pill warn move-warn" id="moveWarn" hidden role="status" aria-live="polite">
+          <span class="s-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><circle cx="13" cy="4.5" r="2" fill="currentColor"/><path d="M10 21l2-6 3 3v4M8 11l3-3 3 1 2 4 3 1M12 15l-1-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="s-txt"><b>You're moving</b> · playback covers the center<small>Minimize to see the way ahead</small></span>
+          <button type="button" class="s-act" id="moveMin">Minimize</button>
+          <button type="button" class="s-act ghost" id="moveKeep">Keep open</button>
+        </div>
+        <div class="safety-stack" id="safetyStack" aria-live="polite">
+          <div class="s-pill warn" id="visWarn" hidden role="status">
+            <span class="s-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></span>
+            <span class="s-txt"><b>Low light</b> · visibility reduced<small>Swipe away, or turn on a helper</small></span>
+            <button type="button" class="s-act" id="visTA">Terrain Assist</button>
+            <button type="button" class="s-act ghost" id="visLV">Low-vis mode</button>
+            <button type="button" class="s-x" id="visX" aria-label="Dismiss low-light warning">×</button>
+          </div>
+          <div class="s-pill" id="taChip" hidden>
+            <span class="s-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M3 19l5-7 4 4 3-4 6 7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+            <span class="s-txt"><b>Terrain Assist</b><small id="taSub">Highlights the ground ahead</small></span>
+            <input type="range" class="ta-op" id="taOp" min="20" max="100" value="70" aria-label="Terrain Assist opacity">
+            <button type="button" class="s-act ghost" id="taOff">Off</button>
+          </div>
+          <div class="s-pill warn" id="faultNote" hidden role="status">
+            <span class="s-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 3l9 16H3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            <span class="s-txt"><b>Sensor fault</b> <span id="faultTxt">· keeping your look</span><small>Low-light warnings are paused</small></span>
+            <button type="button" class="s-act ghost" id="faultAct">Clear view</button>
+            <button type="button" class="s-x" id="faultX" aria-label="Dismiss sensor notice">×</button>
+          </div>
         </div>
         <svg class="frame off" id="frame" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
           <defs>
@@ -1217,26 +1510,33 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
             <button type="button" class="drawer-close" id="drawerClose" aria-label="Close adjustments">
               <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
-            <span class="drawer-title">Edit</span>
-            <button type="button" class="drawer-reset" id="adjReset" hidden>Reset</button>
+            <span class="drawer-title">Quick Adjustments</span>
+            <span class="sz" id="szDrawer" role="group" aria-label="Panel size"><button type="button" class="sz-b" data-d="-1" aria-label="Make the panel smaller">A−</button><button type="button" class="sz-b" data-d="1" aria-label="Make the panel larger">A+</button></span>
+          </div>
+          <div class="drawer-lvbar" id="lvBar" hidden><span>Low-vis is on</span><button type="button" class="lv-off" id="lvOff">Turn off</button></div>
+          <div class="drawer-resetbar" id="adjResetBar" hidden>
+            <button type="button" class="drawer-reset" id="adjReset"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Reset adjustments</button>
           </div>
           <div class="drawer-body" id="drawerBody">
-            <section class="dsec open" id="lookSec">
-              <button type="button" class="dsec-head" aria-expanded="true"><span>Look</span><strong id="lookName">Live</strong></button>
+            <section class="dsec" id="lookSec">
+              <button type="button" class="dsec-head" aria-expanded="false"><span>Look</span><strong id="lookName">Live</strong></button>
               <div class="dsec-body">
                 <div class="lr-row">
                   <div class="lr-top"><label for="intensity">Amount</label><span class="lr-val" id="intensityVal">100%</span></div>
                   <input type="range" class="lr from-left" id="intensity" min="0" max="100" value="100">
                 </div>
+                <span class="look-rows">
                 <button type="button" class="fav-row" id="favRow" aria-pressed="false"><span class="fav-ico">☆</span><span id="favRowText">Add to favorites</span></button>
+                <button type="button" class="fav-row" id="recipeRow"><span class="fav-ico" id="recipeIco">+</span><span id="recipeRowText">Save as recipe</span></button>
+                </span>
               </div>
             </section>
             <section class="dsec" id="wbSec">
-              <button type="button" class="dsec-head" aria-expanded="false"><span>White balance</span><strong class="dsec-sum" id="wbSum"></strong></button>
+              <button type="button" class="dsec-head" aria-expanded="false"><span>White balance</span></button>
               <div class="dsec-body" id="adjWB"></div>
             </section>
             <section class="dsec" id="mainSec">
-              <button type="button" class="dsec-head" aria-expanded="false"><span>Light &amp; color</span><strong class="dsec-sum" id="mainSum"></strong></button>
+              <button type="button" class="dsec-head" aria-expanded="false"><span>Light &amp; color</span></button>
               <div class="dsec-body" id="adjMain"></div>
             </section>
           </div>
@@ -1256,12 +1556,13 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
             <strong>Playback</strong>
             <span class="pb-stats" id="pbStats"></span>
             <span class="pb-mini" id="pbMini" role="img"></span>
+            <span class="sz" id="szPb" role="group" aria-label="Playback size"><button type="button" class="sz-b" data-d="-1" aria-label="Make playback smaller">A−</button><button type="button" class="sz-b" data-d="1" aria-label="Make playback larger">A+</button></span>
             <button type="button" class="pb-ic pb-size" id="pbSize" aria-label="Expand playback">Expand ⤢</button>
           </header>
           <div class="pb-glance" id="pbGlance"></div>
           <div class="pb-grid" id="pbGrid"></div>
           <div class="pb-safe" id="pbSafe" hidden role="alertdialog" aria-labelledby="pbSafeText">
-            <span id="pbSafeText">Expanded playback covers most of your view. Only expand once you've stopped somewhere safe.</span>
+            <span id="pbSafeText">Expanded playback covers the center of your view. Only expand once you've stopped somewhere safe.</span>
             <span class="pb-safe-btns"><button type="button" class="pb-ic warn" id="pbSafeYes">I'm stopped somewhere safe</button><button type="button" class="pb-ic" id="pbSafeNo">Stay in glance</button></span>
           </div>
           <div class="pb-viewer" id="pbViewer" hidden>
@@ -1320,6 +1621,19 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
           <button type="button" class="cbtn" id="camBtn" aria-pressed="false" title="Switch between your camera and the sample photo (W)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6H8l1.4-2h5.2L16 6h1.5A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="12.5" r="3.3" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span class="t">Camera View</span><kbd class="k">W</kbd></button>
           <button type="button" class="cbtn" id="flipCtl" hidden title="Switch between front and back camera (V)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6H8l1.4-2h5.2L16 6h1.5A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.2 12.2a3 3 0 0 1 5.3-1.6M14.8 13.8a3 3 0 0 1-5.3 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="t">Flip camera</span><kbd class="k">V</kbd></button>
         </div>
+        <div class="cgroup stack safety">
+          <span class="cg-label">Safety</span>
+          <button type="button" class="cbtn" id="taBtn" aria-pressed="false" title="Terrain Assist: highlight the ground ahead (T)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 19l5-7 4 4 3-4 6 7z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="t">Terrain Assist</span><kbd class="k">T</kbd></button>
+          <button type="button" class="cbtn" id="lvBtn" aria-pressed="false" title="Low-visibility mode: brighten and sharpen what you see in dark places (N)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg><span class="t">Low-vis mode</span><kbd class="k">N</kbd></button>
+          <label class="cswitch cbtn" title="If a sensor stops working, switch to the clear view (off keeps your look)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3l9 16H3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="t">Clear view on fault</span><button type="button" class="switch" id="faultPref" role="switch" aria-checked="false" aria-label="Clear view on sensor fault"><span class="knob"></span></button></label>
+        </div>
+        <div class="cgroup stack sim">
+          <span class="cg-label">Simulate</span>
+          <button type="button" class="cbtn sim-btn" id="simDusk" aria-pressed="false" title="Simulate a low-light scene (L)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span class="t">Low light</span><kbd class="k">L</kbd></button>
+          <button type="button" class="cbtn sim-btn" id="simWalk" aria-pressed="false" title="Simulate walking (G)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="13" cy="4.5" r="2" fill="currentColor"/><path d="M10 21l2-6 3 3v4M8 11l3-3 3 1 2 4 3 1M12 15l-1-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="t">Walking</span><kbd class="k">G</kbd></button>
+          <button type="button" class="cbtn sim-btn" id="simFault" aria-pressed="false" title="Simulate a light or motion sensor failing (K)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6.5 17.5l11-11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span class="t">Sensor fault</span><kbd class="k">K</kbd></button>
+          <button type="button" class="cbtn sim-btn" id="simCover" aria-pressed="false" title="Simulate covering the capture light (J)"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="3.5" fill="currentColor"/><path d="M4 20L20 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span class="t">Cover capture light</span><kbd class="k">J</kbd></button>
+        </div>
       </div>
       <div class="legacy" hidden aria-hidden="true">
         <span class="led" id="led"></span><span id="ledText"></span>
@@ -1330,6 +1644,14 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
       </div>
     </section>
   </main>
+  <div class="rotate-prompt" id="rotatePrompt" role="dialog" aria-modal="true" aria-labelledby="rotTitle">
+    <div class="rotate-card">
+      <svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true"><rect x="15" y="5" width="18" height="38" rx="4" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M21 38h6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <h2 id="rotTitle">Rotate your phone</h2>
+      <p>The glasses see the world in landscape, so this prototype is built sideways. Turn your phone to try it.</p>
+      <button type="button" class="rotate-skip" id="rotateSkip">Continue in portrait</button>
+    </div>
+  </div>
 
 </div>
 
@@ -1357,7 +1679,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     { id: "highlights", label: "Highlights", group: "adjMain", min: -100, max: 100, step: 1 },
     { id: "shadows", label: "Shadows", group: "adjMain", min: -100, max: 100, step: 1 },
     { id: "saturation", label: "Saturation", group: "adjMain", cls: "sat", min: -100, max: 100, step: 1 },
-    { id: "vignette", label: "Vignette", group: "adjMain", cls: "from-left", min: 0, max: 100, step: 1 }
+    { id: "vignette", label: "Vignette", group: "adjMain", cls: "from-left", min: 0, max: 100, step: 1 },
+    { id: "whites", label: "Whites", group: "adjMain", min: -100, max: 100, step: 1, extra: true },
+    { id: "blacks", label: "Blacks", group: "adjMain", min: -100, max: 100, step: 1, extra: true },
+    { id: "noise", label: "Noise reduction", group: "adjMain", cls: "from-left", min: 0, max: 100, step: 1, extra: true }
   ];
   var adj = {}; ADJ.forEach(function (a) { adj[a.id] = 0; });
 
@@ -1387,11 +1712,13 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   function curve(gain) {
     var out = [], ev = Math.pow(2, adj.exposure), c = adj.contrast / 100 * 0.6;
     var hl = adj.highlights / 100 * 0.22, sh = adj.shadows / 100 * 0.22;
+    var wh = adj.whites / 100 * 0.15, bl = adj.blacks / 100 * 0.12;
     for (var i = 0; i <= 32; i++) {
       var y = (i / 32) * ev * gain;
       y = (y - 0.5) * (1 + c) + 0.5;
       y += sh * (1 - smooth(0, 0.6, y)) * Math.min(1, y * 4 + 0.15);
       y += hl * smooth(0.4, 1, y);
+      y += wh * smooth(0.7, 1, y) + bl * (1 - smooth(0, 0.3, y));
       out.push(Math.max(0, Math.min(1, y)).toFixed(4));
     }
     return out.join(" ");
@@ -1402,30 +1729,100 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     $("adjG").setAttribute("tableValues", curve(1 - t * 0.09));
     $("adjB").setAttribute("tableValues", curve(1 - w + t * 0.04));
     $("adjSat").setAttribute("values", String(1 + adj.saturation / 100));
+    $("adjNR").setAttribute("stdDeviation", (adj.noise / 100 * 1.1).toFixed(2));
     viewport.classList.toggle("adjusted", adjusted());
-    $("adjReset").hidden = !adjusted();
-    var wbN = ADJ.filter(function (a) { return a.group === "adjWB" && adj[a.id] !== 0; }).length;
-    var mainN = ADJ.filter(function (a) { return a.group === "adjMain" && adj[a.id] !== 0; }).length;
-    $("wbSum").textContent = wbN ? wbN + " edited" : "";
-    $("mainSum").textContent = mainN ? mainN + " edited" : "";
+    $("adjResetBar").hidden = !adjusted();
     render();
   }
-  function buildAdjust() {
-    ADJ.forEach(function (a) {
-      var row = document.createElement("div"); row.className = "lr-row";
-      row.innerHTML = '<div class="lr-top"><label for="adj-' + a.id + '">' + a.label + '</label><span class="lr-val" id="adjv-' + a.id + '"></span></div>' +
-        '<input type="range" class="lr ' + (a.cls || "") + '" id="adj-' + a.id + '" min="' + a.min + '" max="' + a.max + '" step="' + a.step + '" value="0">';
-      $(a.group).appendChild(row);
-      var input = row.querySelector("input"), num = row.querySelector(".lr-val");
-      row.querySelector("label").addEventListener("dblclick", function () { adj[a.id] = 0; input.value = 0; show(); applyAdjust(); });
-      function show() { num.textContent = fmtNum(a, adj[a.id]); num.classList.toggle("changed", adj[a.id] !== 0); }
-      input.addEventListener("input", function () { adj[a.id] = parseFloat(input.value); show(); applyAdjust(); });
-      input.addEventListener("dblclick", function () { adj[a.id] = 0; input.value = 0; show(); applyAdjust(); });
-      show();
+  /* Quick Adjustments: each section shows the sliders the user keeps; others can be added back */
+  var quick = {};
+  ADJ.forEach(function (a) { quick[a.id] = !a.extra; });
+  try { var savedQ = JSON.parse(localStorage.getItem("atmos-quick") || "null"); if (savedQ) ADJ.forEach(function (a) { if (a.id in savedQ) quick[a.id] = !!savedQ[a.id]; }); } catch (e) {}
+  function saveQuick() { try { localStorage.setItem("atmos-quick", JSON.stringify(quick)); } catch (e) {} }
+  function setSecOpen(sec, open) {
+    sec.classList.toggle("open", open); sec.classList.remove("peek");
+    sec.querySelector(".dsec-head").setAttribute("aria-expanded", String(open));
+    if (!open) { var g = sec.querySelector(".lr-addbar"); if (g && !g.querySelector(".lr-add-car").hidden) { g.querySelector(".lr-add-car").hidden = true; g.querySelector(".lr-add").setAttribute("aria-expanded", "false"); } }
+  }
+  /* Show or hide with the shared glide instead of popping in and out */
+  function setShown(el, show) {
+    if (!el) return;
+    if (show) {
+      clearTimeout(el._outT); el.classList.remove("out");
+      if (el.hidden) { el.hidden = false; el.style.animation = "none"; void el.offsetWidth; el.style.animation = ""; }
+    } else if (!el.hidden && !el.classList.contains("out")) {
+      el.classList.add("out");
+      el._outT = setTimeout(function () { el.hidden = true; el.classList.remove("out"); }, 280);
+    }
+  }
+  function reduceMotion() { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  function setAdj(a, v) {
+    adj[a.id] = v; var inp = $("adj-" + a.id), num = $("adjv-" + a.id);
+    if (inp) inp.value = v;
+    if (num) { num.textContent = fmtNum(a, v); num.classList.toggle("changed", v !== 0); }
+  }
+  function renderAddBar(group) {
+    var bar = $(group + "-add"), car = bar.querySelector(".lr-add-car"), track = bar.querySelector(".lr-add-track"), btn = bar.querySelector(".lr-add");
+    var hidden = ADJ.filter(function (a) { return a.group === group && !quick[a.id]; });
+    btn.disabled = !hidden.length;
+    btn.querySelector(".t").textContent = hidden.length ? "Add Adjustments" : "All adjustments added";
+    track.innerHTML = "";
+    hidden.forEach(function (a) {
+      var c = document.createElement("button"); c.type = "button"; c.className = "lr-add-tile";
+      c.setAttribute("aria-label", "Add " + a.label);
+      c.innerHTML = '<svg viewBox="0 0 24 10" width="24" height="10" aria-hidden="true"><path d="M1 5h22" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="5" r="3.2" fill="currentColor"/></svg><span>' + a.label + '</span>';
+      c.style.setProperty("--i", track.children.length);
+      c.addEventListener("click", function () {
+        quick[a.id] = true; saveQuick();
+        var r = $("row-" + a.id); r.classList.add("entering"); r.hidden = false; void r.offsetWidth; r.classList.remove("entering");
+        renderAddBar(group);
+      });
+      track.appendChild(c);
     });
+    if (!hidden.length) setAddOpen(group, false);
+  }
+  function setAddOpen(group, open) {
+    var bar = $(group + "-add"); if (!bar) return;
+    bar.querySelector(".lr-add-car").hidden = !open;
+    bar.querySelector(".lr-add").setAttribute("aria-expanded", String(open));
+    if (open) {
+      var mine = bar.closest(".dsec");
+      Array.prototype.forEach.call(document.querySelectorAll("#drawer .dsec"), function (sec) {
+        if (sec === mine) setSecOpen(sec, true);
+        else { setSecOpen(sec, false); var g = sec.querySelector(".lr-addbar"); if (g) setAddOpen(g.id.replace("-add", ""), false); }
+      });
+    }
+  }
+  function buildAdjust() {
+    ["adjWB", "adjMain"].forEach(function (group) {
+      var bar = document.createElement("div"); bar.className = "lr-addbar"; bar.id = group + "-add";
+      bar.innerHTML = '<button type="button" class="lr-add" aria-expanded="false"><span class="t">Add Adjustments</span><span class="car" aria-hidden="true">\u25BE</span></button><div class="lr-add-car" hidden><div class="lr-add-track"></div></div>';
+      $(group).appendChild(bar);
+      bar.querySelector(".lr-add").addEventListener("click", function () { setAddOpen(group, bar.querySelector(".lr-add-car").hidden); });
+    });
+    ADJ.forEach(function (a) {
+      var row = document.createElement("div"); row.className = "lr-row"; row.id = "row-" + a.id; row.hidden = !quick[a.id];
+      row.innerHTML = '<div class="lr-top"><label for="adj-' + a.id + '">' + a.label + '</label><span class="lr-val" id="adjv-' + a.id + '"></span>' +
+        '<button type="button" class="lr-del" aria-label="Remove ' + a.label + ' from Quick Adjustments" title="Remove ' + a.label + '"><i aria-hidden="true">\u2212</i></button></div>' +
+        '<input type="range" class="lr ' + (a.cls || "") + '" id="adj-' + a.id + '" min="' + a.min + '" max="' + a.max + '" step="' + a.step + '" value="0">';
+      $(a.group).insertBefore(row, $(a.group + "-add"));
+      var input = row.querySelector("input");
+      function glideZero() { var o = {}; o[a.id] = 0; tweenAdj(o, null, 600); }
+      row.querySelector("label").addEventListener("dblclick", glideZero);
+      input.addEventListener("input", function () { setAdj(a, parseFloat(input.value)); applyAdjust(); });
+      input.addEventListener("dblclick", glideZero);
+      row.querySelector(".lr-del").addEventListener("click", function () {
+        quick[a.id] = false; saveQuick(); renderAddBar(a.group);
+        row.classList.add("leaving");
+        tweenAdj((function () { var o = {}; o[a.id] = 0; return o; })(), null, 380);
+        setTimeout(function () { row.hidden = true; row.classList.remove("leaving"); }, 380);
+      });
+      setAdj(a, adj[a.id] || 0);
+    });
+    ["adjWB", "adjMain"].forEach(renderAddBar);
     $("adjReset").addEventListener("click", function () {
-      ADJ.forEach(function (a) { adj[a.id] = 0; $("adj-" + a.id).value = 0; $("adjv-" + a.id).textContent = fmtNum(a, 0); $("adjv-" + a.id).classList.remove("changed"); });
-      applyAdjust();
+      var zero = {}; ADJ.forEach(function (a) { if (adj[a.id] !== 0) zero[a.id] = 0; }); tweenAdj(zero, null, 900);
+      if (safe.lowvis) { safe.lowvis = false; lvAuto = false; viewport.classList.remove("lowvis"); $("lvBtn").setAttribute("aria-pressed", "false"); setShown($("lvTag"), false); $("lvBar").hidden = true; }
     });
   }
 
@@ -1463,13 +1860,14 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   function displayOrder() {
     var out = [];
     favs.forEach(function (id) { var i = FILTERS.findIndex(function (f) { return f.id === id; }); if (i >= 0 && available(i)) out.push(i); });
+    FILTERS.forEach(function (f, i) { if (f.rcp) out.push(i); });
     FILTERS.forEach(function (f, i) { if (f.live) out.push(i); });
-    FILTERS.forEach(function (f, i) { if (!f.live && !isFav(i) && available(i)) out.push(i); });
+    FILTERS.forEach(function (f, i) { if (!f.live && !f.rcp && !isFav(i) && available(i)) out.push(i); });
     return out;
   }
   function toggleFav(i) {
     if (i == null) i = state.idx;
-    if (FILTERS[i].live) return;
+    if (FILTERS[i].live || FILTERS[i].rcp) return;
     var id = FILTERS[i].id, k = favs.indexOf(id);
     if (k === -1) favs.push(id); else favs.splice(k, 1);
     try { localStorage.setItem("atmos-favs", JSON.stringify(favs)); } catch (e) {}
@@ -1482,7 +1880,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     displayOrder().forEach(function (i) {
       var f = FILTERS[i];
       var b = document.createElement("button");
-      b.type = "button"; b.className = (f.live ? "chip live" : "chip") + (isFav(i) ? " fav" : ""); b.dataset.i = i;
+      b.type = "button"; b.className = (f.live ? "chip live" : "chip") + (isFav(i) ? " fav" : "") + (f.rcp ? " rcp" : ""); b.dataset.i = i;
       var th = document.createElement("span"); th.className = "thumb";
       var ti = document.createElement("img"); ti.alt = ""; ti.decoding = "async";
       ti.src = f.live ? rawSrc : f.edit ? (editSrc || rawSrc) : (bakedFor(f) || rawSrc);
@@ -1497,7 +1895,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
         if (e.target.closest(".star") && i === state.idx && !f.live) { toggleFav(i); return; }
         choose(i);
       });
-      if (f.live && favs.length && displayOrder()[0] !== i) { var fs = document.createElement("span"); fs.className = "dock-sep fav-sep"; fs.setAttribute("aria-hidden", "true"); chips.appendChild(fs); }
+      if (f.live && (favs.length || FILTERS.some(function (x) { return x.rcp; })) && displayOrder()[0] !== i) { var fs = document.createElement("span"); fs.className = "dock-sep fav-sep"; fs.setAttribute("aria-hidden", "true"); chips.appendChild(fs); }
       chips.appendChild(b);
       if (f.live) { var sep = document.createElement("span"); sep.className = "dock-sep"; sep.setAttribute("aria-hidden", "true"); chips.appendChild(sep); }
     });
@@ -1554,7 +1952,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     $("dockCount").textContent = (order.indexOf(state.idx) + 1) + " / " + order.length;
     var active = chipFor(state.idx);
     var fav = isFav(state.idx);
-    $("favRow").hidden = !!f.live;
+    $("favRow").hidden = !!f.live || !!f.rcp;
+    if (typeof updateRecipeRow === "function") updateRecipeRow(f);
     $("favRow").setAttribute("aria-pressed", String(fav));
     $("favRow").querySelector(".fav-ico").textContent = fav ? "★" : "☆";
     $("favRowText").textContent = fav ? "Favorited" : "Add to favorites";
@@ -1564,17 +1963,50 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
       dockInd.style.left = active.offsetLeft + "px";
       dockInd.style.width = active.offsetWidth + "px";
       dockInd.style.opacity = state.on ? 1 : 0;
-      if (chips.scrollWidth > chips.clientWidth) {
+      if (dock.getAttribute("data-style") === "carousel") layoutWheel(order);
+      else if (chips.scrollWidth > chips.clientWidth) {
         chips.scrollTo({ left: active.offsetLeft - chips.clientWidth / 2 + active.offsetWidth / 2, behavior: "smooth" });
       }
     }
     if (state.rec) queueSeg();
+    if (safe) renderFault();
   }
 
   function choose(i) {
     var changed = i !== state.idx || !state.on;
-    state.idx = i; state.on = true; render();
+    state.idx = i; state.on = true;
+    if (changed && FILTERS[i].rcp && typeof applyRecipe === "function") applyRecipe(FILTERS[i].rcp);
+    render();
     if (changed) { wakeLabel(300); wakeDock(300); }
+  }
+  /* Endless wheel: every look sits on a gentle arc around the chosen one and wraps around, so there's no first or last */
+  function layoutWheel(order) {
+    var n = order.length, k = order.indexOf(state.idx); if (k < 0) return;
+    var w = chips.clientWidth || 600, step = Math.max(30, Math.min(50, w * 0.06)), gap = Math.max(18, Math.min(30, w * 0.035));
+    var pos = {};
+    order.forEach(function (i, j) {
+      var d = ((j - k) % n + n) % n;
+      if (d > Math.ceil((n - 1) / 2)) d -= n;
+      var a = Math.abs(d), x = d === 0 ? 0 : Math.sign(d) * (gap + step * (a - 0.5) + 12);
+      pos[i] = { d: d, x: x };
+      var b = chipFor(i); if (!b) return;
+      b.style.setProperty("--x", x.toFixed(1) + "px");
+      b.style.setProperty("--y", (a * a * 2.6).toFixed(1) + "px");
+      b.style.setProperty("--r", (d * 5).toFixed(1) + "deg");
+      b.style.setProperty("--s", d === 0 ? "1" : String(Math.max(0.7, 1 - a * 0.07)));
+      b.style.setProperty("--o", d === 0 ? "1" : String(Math.max(0, 0.92 - a * 0.2)));
+      b.classList.toggle("far", a > 3);
+    });
+    var sep = chips.querySelector(".fav-sep");
+    if (sep) {
+      var live = FILTERS.findIndex(function (f) { return f.live; }), L = pos[live], left = null;
+      order.forEach(function (i) { if (L && (isFav(i) || FILTERS[i].rcp) && pos[i].d === L.d - 1) left = pos[i]; });
+      if (L && left) {
+        var mx = (L.x + left.x) / 2 + (L.d === 0 ? -14 : left.d === 0 ? 14 : 0), md = (L.d + left.d) / 2;
+        sep.style.transform = "translateX(" + mx.toFixed(1) + "px) translateY(" + (md * md * 2.6).toFixed(1) + "px) rotate(" + (md * 5).toFixed(1) + "deg)";
+        sep.style.opacity = String(Math.max(0, 0.9 - Math.abs(md) * 0.2));
+      } else sep.style.opacity = "0";
+    }
   }
   function nextAvail(i, dir) {
     var order = displayOrder(), k = order.indexOf(i);
@@ -1620,12 +2052,20 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     drawerClose = setTimeout(function () { setEditing(false); }, 12000);
   }
   ["pointermove", "pointerdown", "input", "focusin", "wheel"].forEach(function (ev) { drawer.addEventListener(ev, wakeDrawer, { passive: true }); });
-  Array.prototype.forEach.call(drawer.querySelectorAll(".dsec-head"), function (h) {
+  var canHover = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  Array.prototype.forEach.call(drawer.querySelectorAll(".dsec"), function (sec) {
+    var h = sec.querySelector(".dsec-head");
     h.addEventListener("click", function () {
-      var sec = h.parentNode, open = !sec.classList.contains("open");
-      Array.prototype.forEach.call(drawer.querySelectorAll(".dsec"), function (x) { x.classList.remove("open"); x.querySelector(".dsec-head").setAttribute("aria-expanded", "false"); });
-      if (open) { sec.classList.add("open"); h.setAttribute("aria-expanded", "true"); }
+      var open = !sec.classList.contains("open");
+      setSecOpen(sec, open);
+      if (!open) sec._noPeek = true; // don't re-preview until the pointer leaves
     });
+    if (canHover) {
+      sec.addEventListener("pointerenter", function () { if (!sec._noPeek && !sec.classList.contains("open")) sec.classList.add("peek"); });
+      sec.addEventListener("pointerleave", function () { sec._noPeek = false; sec.classList.remove("peek"); });
+      // Using a slider while previewing keeps the section open
+      sec.querySelector(".dsec-body").addEventListener("pointerdown", function () { if (sec.classList.contains("peek")) setSecOpen(sec, true); });
+    }
   });
   drawer.addEventListener("pointerdown", function (e) {
     if (e.target.matches("input.lr")) { drawer.classList.add("focus"); e.target.closest(".lr-row").classList.add("active"); }
@@ -1859,7 +2299,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   var toastT = null;
   function toast(text) {
     var el = $("toast"); el.textContent = text; el.classList.add("show");
-    clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove("show"); }, 1600);
+    clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove("show"); }, 2200);
   }
   function showPreview(blob, isVideo) {
     var p = $("capPreview");
@@ -1878,6 +2318,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   var busy = false;
   function capturePhoto() {
     if (!state.power || pb.open || busy) return;
+    if (safe.covered) { toast("Capture light is covered · uncover it to take a photo"); return; }
     if (state.rec) { toast("Stop recording to take a photo"); return; }
     busy = true; flashFx(); shutterSound(); led("blink");
     var flowId = state.flow ? state.flow.id : null, look = lookLabel();
@@ -1904,6 +2345,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   function queueSeg() { if (!state.rec) return; clearTimeout(segTimer); segTimer = setTimeout(grabSeg, 350); }
   function toggleRec() {
     if (!state.power || pb.open) return;
+    if (!state.rec && safe.covered) { toast("Capture light is covered · uncover it to record"); return; }
     if (!state.rec) {
       state.rec = { start: Date.now(), segs: [], pending: [], lastKey: null, flowId: state.flow ? state.flow.id : null, look: lookLabel() };
       state.rec.originalP = compose(true).then(function (c) { return toBlob(c, 0.9); });
@@ -2293,13 +2735,13 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     "precision mediump float;",
     "varying vec2 vUv;",
     "uniform sampler2D uVid; uniform sampler2D uLutA; uniform sampler2D uLutB;",
-    "uniform float uIdA, uIdB, uMix, uAmt, uReal, uAdj, uEv, uCon, uHl, uSh, uSat, uWarm, uTint, uVig;",
+    "uniform float uIdA, uIdB, uMix, uAmt, uReal, uAdj, uEv, uCon, uHl, uSh, uSat, uWarm, uTint, uVig, uWh, uBl;",
     "const float N = 33.0;",
     "vec3 lut(sampler2D t, vec3 c){ c = clamp(c, 0.0, 1.0); float b = c.b * (N - 1.0); float b0 = floor(b); float b1 = min(b0 + 1.0, N - 1.0); float f = b - b0;",
     "  float x = c.r * (N - 1.0) + 0.5; float y = (c.g * (N - 1.0) + 0.5) / N;",
     "  vec3 s0 = texture2D(t, vec2((x + b0 * N) / (N * N), y)).rgb; vec3 s1 = texture2D(t, vec2((x + b1 * N) / (N * N), y)).rgb; return mix(s0, s1, f); }",
     "float sm(float a, float b, float x){ float t = clamp((x - a) / (b - a), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }",
-    "float tone(float x, float gain){ float y = x * uEv * gain; y = (y - 0.5) * (1.0 + uCon) + 0.5; y += uSh * (1.0 - sm(0.0, 0.6, y)) * min(1.0, y * 4.0 + 0.15); y += uHl * sm(0.4, 1.0, y); return clamp(y, 0.0, 1.0); }",
+    "float tone(float x, float gain){ float y = x * uEv * gain; y = (y - 0.5) * (1.0 + uCon) + 0.5; y += uSh * (1.0 - sm(0.0, 0.6, y)) * min(1.0, y * 4.0 + 0.15); y += uHl * sm(0.4, 1.0, y); y += uWh * sm(0.7, 1.0, y) + uBl * (1.0 - sm(0.0, 0.3, y)); return clamp(y, 0.0, 1.0); }",
     "void main(){",
     "  vec3 src = texture2D(uVid, vUv).rgb;",
     "  if (uReal > 0.5) { gl_FragColor = vec4(src, 1.0); return; }",
@@ -2323,7 +2765,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     var loc = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    ["uVid", "uLutA", "uLutB", "uIdA", "uIdB", "uMix", "uAmt", "uReal", "uAdj", "uEv", "uCon", "uHl", "uSh", "uSat", "uWarm", "uTint", "uVig"].forEach(function (n) { cam.u[n] = gl.getUniformLocation(pr, n); });
+    ["uVid", "uLutA", "uLutB", "uIdA", "uIdB", "uMix", "uAmt", "uReal", "uAdj", "uEv", "uCon", "uHl", "uSh", "uSat", "uWarm", "uTint", "uVig", "uWh", "uBl"].forEach(function (n) { cam.u[n] = gl.getUniformLocation(pr, n); });
     gl.uniform1i(cam.u.uVid, 0); gl.uniform1i(cam.u.uLutA, 1); gl.uniform1i(cam.u.uLutB, 2);
     gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
     cam.vtex = newTex(gl);
@@ -2346,7 +2788,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     });
     return null;
   }
-  function camLookId() { var f = FILTERS[state.idx]; return f.live || !CAM_LUT[f.id] ? "live" : f.id; }
+  function camLookId() { var f = FILTERS[state.idx], id = f.rcp ? f.base : f.id; return f.live || !CAM_LUT[id] ? "live" : id; }
   function camFrame() {
     if (!cam.on) return;
     cam.raf = requestAnimationFrame(camFrame);
@@ -2369,6 +2811,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     gl.uniform1f(U.uHl, adj.highlights / 100 * 0.22); gl.uniform1f(U.uSh, adj.shadows / 100 * 0.22);
     gl.uniform1f(U.uSat, 1 + adj.saturation / 100); gl.uniform1f(U.uWarm, adj.warmth / 100 * 0.12);
     gl.uniform1f(U.uTint, adj.tint / 100); gl.uniform1f(U.uVig, adj.vignette / 100);
+    gl.uniform1f(U.uWh, adj.whites / 100 * 0.15); gl.uniform1f(U.uBl, adj.blacks / 100 * 0.12);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   function camAspect() {
@@ -2518,6 +2961,19 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     }).catch(function () { setImmersive(true); });
   }
   $("fsBtn").addEventListener("click", function (e) { e.stopPropagation(); toggleFs(); });
+  var busyT = null;
+  function markBusy(e) {
+    var t = e.target;
+    if (!t || !t.closest || t.closest("#fsBtn")) return;
+    if (e.type !== "keydown" && !t.closest("button, input, .dock, .drawer, .controls, .playback")) return;
+    viewport.classList.add("busy"); clearTimeout(busyT);
+    busyT = setTimeout(function () { viewport.classList.remove("busy"); }, 2500);
+  }
+  ["pointerdown", "input", "keydown"].forEach(function (ev) { document.addEventListener(ev, markBusy, true); });
+  var shortLand = window.matchMedia("(orientation: landscape) and (max-height: 520px) and (pointer: coarse)");
+  function fitLandscape() { if (shortLand.matches && !isImmersive()) setTimeout(function () { viewport.scrollIntoView({ block: "start" }); }, 120); }
+  if (shortLand.addEventListener) shortLand.addEventListener("change", fitLandscape);
+  fitLandscape();
   $("fsBtn").addEventListener("pointerdown", function (e) { e.stopPropagation(); });
   document.addEventListener("fullscreenchange", function () {
     fsIcon(!!inFs());
@@ -2562,6 +3018,394 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   var pvEl = $("pbVid");
   pvEl.addEventListener("timeupdate", function () { if (pvEl.duration) $("pbProg").style.width = (100 * pvEl.currentTime / pvEl.duration) + "%"; });
   pvEl.addEventListener("ended", function () { stopVideo(); wakePb(); });
+
+  /* ---------- Safety: low-light warning (1.4), Terrain Assist (1.5), capture light (1.6), sensor fault (1.7) ---------- */
+  var VIS_THRESHOLD = 0.12; /* placeholder: warn when the view's average brightness drops below 12% (real value set through testing) */
+  var safe = { dusk: false, fault: false, faultPref: false, faultNoteX: false, covered: false, warnDismissed: false, warned: false, ta: false, taOp: 0.7, camLum: null };
+  var lumCache = {};
+  function lumOf(src) {
+    if (!src) return null;
+    if (src in lumCache) return lumCache[src];
+    lumCache[src] = null;
+    var im = new Image();
+    im.onload = function () {
+      try {
+        var c = document.createElement("canvas"); c.width = 48; c.height = 32;
+        var g = c.getContext("2d"); g.drawImage(im, 0, 0, 48, 32);
+        var d = g.getImageData(0, 0, 48, 32).data, t = 0;
+        for (var i = 0; i < d.length; i += 4) t += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+        lumCache[src] = t / (d.length / 4) / 255;
+      } catch (e) { lumCache[src] = 0.25; }
+    };
+    im.src = src; return null;
+  }
+  var lumCanvas = null;
+  var camLumT = 0, camLumV = null;
+  function sampleCam() {
+    var now = performance.now(); if (now - camLumT < 250) return camLumV; camLumT = now;
+    camLumV = sampleCamNow(); return camLumV;
+  }
+  function sampleCamNow() {
+    try {
+      var sc = camSrc(); if (!sc.ready) return null;
+      if (!lumCanvas) { lumCanvas = document.createElement("canvas"); lumCanvas.width = 32; lumCanvas.height = 20; }
+      var g = lumCanvas.getContext("2d", { willReadFrequently: true }); g.drawImage(sc.el, 0, 0, 32, 20);
+      var d = g.getImageData(0, 0, 32, 20).data, t = 0;
+      for (var i = 0; i < d.length; i += 4) t += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+      return t / (d.length / 4) / 255;
+    } catch (e) { return null; }
+  }
+  function visibility() {
+    var f = FILTERS[state.idx], rawL = lumOf(rawSrc);
+    if (rawL == null) return null;
+    var L = rawL;
+    if (cam.on) { var cl = sampleCam(); if (cl != null) L = cl; }
+    var showing = state.on && !state.peek && !f.live;
+    if (showing && f.baked && state.defaultPhoto) {
+      var lookL = lumOf(f.baked);
+      if (lookL != null) L = L * (1 - state.intensity + state.intensity * lookL / rawL);
+    }
+    if (!(!state.on || state.peek)) {
+      L *= Math.pow(2, adj.exposure);
+      L *= 1 + adj.shadows / 100 * 0.15 + adj.blacks / 100 * 0.15 + adj.whites / 100 * 0.08 + adj.highlights / 100 * 0.05;
+      L *= 1 - adj.vignette / 100 * 0.3;
+    }
+    L *= 1 - 0.67 * duskLevel();
+    return Math.max(0, Math.min(1, L));
+  }
+  function setWarn(on) {
+    var show = on && !safe.ta && !safe.warnDismissed;
+    setShown($("visWarn"), show); viewport.classList.toggle("lowlight-warn", show);
+  }
+  function safetyTick() {
+    if (!state.power || safe.fault) { setWarn(false); return; }
+    var L = visibility(); if (L == null) return;
+    if (!safe.warned && L < VIS_THRESHOLD) { safe.warned = true; safe.warnDismissed = false; }
+    else if (safe.warned && L > VIS_THRESHOLD + 0.03) { safe.warned = false; safe.warnDismissed = false; }
+    setWarn(safe.warned);
+  }
+  setInterval(safetyTick, 400);
+  function dismissWarn() { safe.warnDismissed = true; setWarn(safe.warned); }
+  $("visX").addEventListener("click", function (e) { e.stopPropagation(); dismissWarn(); });
+  (function swipeAway(el) {
+    var x0 = null;
+    el.addEventListener("pointerdown", function (e) { if (e.target.closest("button, input")) return; x0 = e.clientX; el.setPointerCapture(e.pointerId); e.stopPropagation(); });
+    el.addEventListener("pointermove", function (e) { if (x0 == null) return; var dx = e.clientX - x0; el.style.transform = "translateX(" + dx + "px)"; el.style.opacity = String(Math.max(.2, 1 - Math.abs(dx) / 160)); });
+    function end(e) { if (x0 == null) return; var dx = e.clientX - x0; x0 = null; el.style.transform = ""; el.style.opacity = ""; if (Math.abs(dx) > 50) dismissWarn(); }
+    el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+  })($("visWarn"));
+  function setTA(on) {
+    safe.ta = on; viewport.classList.toggle("ta-on", on);
+    setShown($("taChip"), on); $("taBtn").setAttribute("aria-pressed", String(on));
+    $("taSub").textContent = cam.on ? "Brightens the ground ahead (simulated)" : "Highlights the ground ahead";
+    setWarn(safe.warned);
+  }
+  $("visTA").addEventListener("click", function (e) { e.stopPropagation(); setTA(true); });
+  $("taOff").addEventListener("click", function (e) { e.stopPropagation(); setTA(false); });
+  $("taBtn").addEventListener("click", function () { if (state.power) setTA(!safe.ta); });
+  $("taOp").addEventListener("input", function (e) { safe.taOp = e.target.value / 100; viewport.style.setProperty("--ta", safe.taOp); });
+  ["pointerdown", "click"].forEach(function (ev) { $("safetyStack").addEventListener(ev, function (e) { e.stopPropagation(); }); });
+  /* 1.9 Low-visibility mode: turned on by the wearer (button, N, or from the low-light warning), never automatically */
+  /* Exposure meter (Light & color): reads what you're seeing against a neutral scene, in stops */
+  var EV_TARGET = 0.22; /* "neutral" average brightness for an everyday daylight scene */
+  /* the meter now lives in the view (HUD), not the panel */
+  function fmtEv(ev) { return (Math.abs(ev) < 0.05 ? "±0.0" : (ev > 0 ? "+" : "−") + Math.abs(ev).toFixed(1)) + " EV"; }
+  function meterNow() { var L = visibility(); return L == null ? null : Math.log(Math.max(L, 1e-4) / EV_TARGET) / Math.LN2; }
+  function updateMeter() {
+    var ev = meterNow(); if (ev == null) return;
+    var c = Math.max(-3, Math.min(3, ev));
+    $("lvEv").textContent = safe.lowvis ? fmtEv(ev) : "";
+    $("hmMark").style.left = (50 + c / 3 * 50).toFixed(2) + "%";
+    var hv = $("hmVal"); hv.textContent = Math.abs(ev) < 0.05 ? "0.0" : (ev > 0 ? "+" : "\u2212") + Math.abs(ev).toFixed(1);
+    hv.classList.toggle("off", Math.abs(ev) >= 0.35);
+    $("hmAuto").hidden = !(safe.lowvis && lvAuto);
+    viewport.classList.toggle("meter-on", viewport.classList.contains("editing") || !!safe.lowvis);
+  }
+  (function meterLoop() { updateMeter(); requestAnimationFrame(meterLoop); })();
+
+  /* Low-visibility mode: lifts Shadows, adds Noise reduction, and meters Exposure back to neutral for whatever the scene is right now */
+  var LV_FIXED = { shadows: 50, noise: 40 }, lvPrev = null, lvAnim = null, lvAuto = false, lvTweening = false;
+  function tweenAdj(target, done, dur) {
+    dur = reduceMotion() ? 1 : (dur || 1400);
+    cancelAnimationFrame(lvAnim); lvTweening = true;
+    var from = {}, t0 = performance.now();
+    Object.keys(target).forEach(function (id) { from[id] = adj[id]; });
+    (function stepT(now) {
+      var k = Math.min(1, (now - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      Object.keys(target).forEach(function (id) {
+        var a = ADJ.filter(function (x) { return x.id === id; })[0];
+        var v = from[id] + (target[id] - from[id]) * e;
+        setAdj(a, k < 1 ? Math.round(v / a.step) * a.step : target[id]);
+      });
+      applyAdjust();
+      if (k < 1) lvAnim = requestAnimationFrame(stepT); else { lvTweening = false; if (done) done(); }
+    })(t0);
+  }
+  function neutralExposure(extra) {
+    var keep = {}; Object.keys(extra).forEach(function (id) { keep[id] = adj[id]; adj[id] = extra[id]; });
+    keep.exposure = adj.exposure; adj.exposure = 0;
+    var L = visibility();
+    Object.keys(keep).forEach(function (id) { adj[id] = keep[id]; });
+    if (L == null) return 0;
+    var ev = Math.log(EV_TARGET / Math.max(L, 1e-4)) / Math.LN2;
+    return Math.round(Math.max(-2, Math.min(2, ev)) / 0.05) * 0.05;
+  }
+  function lvAutoTick() {
+    if (!safe.lowvis || !lvAuto || lvTweening || !state.power) return;
+    if (performance.now() - duskAnim.t0 < 950) return; /* let the scene settle, then glide back to neutral */
+    var want = neutralExposure({});
+    if (Math.abs(want - adj.exposure) > 0.15) tweenAdj({ exposure: want });
+  }
+  setInterval(lvAutoTick, 500);
+  $("adj-exposure").addEventListener("input", function () {
+    if (safe.lowvis && lvAuto) { lvAuto = false;  toast("Auto exposure off · keeping your setting"); }
+  });
+  function setLowVis(on) {
+    if (on === !!safe.lowvis) return;
+    safe.lowvis = on; viewport.classList.toggle("lowvis", on);
+    $("lvBtn").setAttribute("aria-pressed", String(on)); setShown($("lvTag"), on); $("lvBar").hidden = !on;
+    if (on) {
+      lvPrev = {}; ["exposure", "shadows", "noise"].forEach(function (id) {
+        lvPrev[id] = adj[id];
+        if (!quick[id]) { quick[id] = true; $("row-" + id).hidden = false; }
+      });
+      saveQuick(); renderAddBar("adjMain");
+      setEditing(true); setSecOpen($("mainSec"), true);
+      lvAuto = true; 
+      var target = { shadows: LV_FIXED.shadows, noise: LV_FIXED.noise, exposure: neutralExposure(LV_FIXED) };
+      lvSet = target;
+      tweenAdj(target);
+      toast("Low-visibility mode · metering to neutral");
+    } else {
+      var wasAuto = lvAuto; lvAuto = false; 
+      var back = {};
+      if (lvSet) {
+        if (adj.shadows === lvSet.shadows) back.shadows = lvPrev.shadows;
+        if (adj.noise === lvSet.noise) back.noise = lvPrev.noise;
+      }
+      if (wasAuto) back.exposure = lvPrev.exposure;
+      tweenAdj(back);
+      toast("Low-visibility mode off");
+    }
+    safetyTick();
+  }
+  var lvSet = null;
+  ["lvX", "lvOff"].forEach(function (id) {
+    $(id).addEventListener("click", function (e) { e.stopPropagation(); setLowVis(false); });
+    $(id).addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+  });
+  $("lvBtn").addEventListener("click", function () { if (state.power) setLowVis(!safe.lowvis); });
+  $("visLV").addEventListener("click", function (e) { e.stopPropagation(); setLowVis(true); });
+  /* the simulated dusk fades in over 900 ms, so the meter follows it smoothly instead of jumping */
+  var duskAnim = { from: 0, to: 0, t0: 0 };
+  function duskLevel() { var k = Math.min(1, (performance.now() - duskAnim.t0) / 900); k = k * k * (3 - 2 * k); return duskAnim.from + (duskAnim.to - duskAnim.from) * k; }
+  function setDusk(on) { duskAnim = { from: duskLevel(), to: on ? 1 : 0, t0: performance.now() }; safe.dusk = on; viewport.classList.toggle("dusk", on); $("simDusk").setAttribute("aria-pressed", String(on)); safetyTick(); }
+  $("simDusk").addEventListener("click", function () { setDusk(!safe.dusk); });
+  /* 1.7: what happens if a light or motion sensor fails is the wearer's choice (default keeps the look) */
+  function renderFault() {
+    var n = $("faultNote");
+    setShown(n, safe.fault && !safe.faultNoteX);
+    if (!safe.fault) return;
+    $("faultTxt").textContent = safe.faultPref && !state.on ? "· switched to clear view" : "· keeping your look";
+    $("faultAct").textContent = state.on ? "Clear view" : "Look back on";
+  }
+  function setFault(on) {
+    safe.fault = on; safe.faultNoteX = false; $("simFault").setAttribute("aria-pressed", String(on));
+    if (on && safe.faultPref && state.on) { state.on = false; render(); wakeLabel(); }
+    if (!on) toast("Sensors back to normal");
+    renderFault(); safetyTick();
+  }
+  $("simFault").addEventListener("click", function () { if (state.power) setFault(!safe.fault); });
+  $("faultAct").addEventListener("click", function (e) { e.stopPropagation(); toggle(); renderFault(); });
+  $("faultX").addEventListener("click", function (e) { e.stopPropagation(); safe.faultNoteX = true; renderFault(); });
+  $("faultPref").addEventListener("click", function (e) {
+    e.preventDefault(); e.stopPropagation(); safe.faultPref = !safe.faultPref;
+    $("faultPref").setAttribute("aria-checked", String(safe.faultPref));
+    toast(safe.faultPref ? "On a sensor fault: switch to clear view" : "On a sensor fault: keep your look");
+  });
+  /* 1.6: the capture light can't be turned off, and capture is blocked while it's covered */
+  function setCover(on) {
+    safe.covered = on; $("simCover").setAttribute("aria-pressed", String(on));
+    $("capLed").classList.toggle("covered", on);
+    if (on && state.rec) { toggleRec(); toast("Capture light covered · recording stopped"); }
+    else toast(on ? "Capture light covered · capture is blocked" : "Capture light uncovered");
+  }
+  $("simCover").addEventListener("click", function () { if (state.power) setCover(!safe.covered); });
+  document.addEventListener("keydown", function (e) {
+    var t = e.target; if (t && t.tagName === "INPUT" && t.type !== "checkbox" && t.type !== "range") return;
+    if (e.metaKey || e.ctrlKey || e.altKey || e.repeat || !state.power || pb.open) return;
+    var k = e.key.toLowerCase();
+    if (k === "t") setTA(!safe.ta);
+    else if (k === "n") setLowVis(!safe.lowvis);
+    else if (k === "l") setDusk(!safe.dusk);
+    else if (k === "k") setFault(!safe.fault);
+    else if (k === "j") setCover(!safe.covered);
+  });
+
+  /* 1.8: sustained movement (walking for ~3 s or vehicle speed, not head turns) while playback is expanded -> notify only */
+  var move = { sim: false, sensor: false, kept: false, samples: [] };
+  function moving() { return move.sim || move.sensor; }
+  function moveTick() {
+    var show = state.power && pb.open && pb.mode === "full" && moving() && !move.kept;
+    setShown($("moveWarn"), show);
+    if (!moving()) move.kept = false;
+  }
+  setInterval(moveTick, 300);
+  function setWalk(on) { move.sim = on; $("simWalk").setAttribute("aria-pressed", String(on)); if (on) move.kept = false; moveTick(); }
+  $("simWalk").addEventListener("click", function () { if (state.power) setWalk(!move.sim); });
+  $("moveMin").addEventListener("click", function (e) { e.stopPropagation(); setPbMode("glance"); moveTick(); });
+  $("moveKeep").addEventListener("click", function (e) { e.stopPropagation(); move.kept = true; moveTick(); });
+  ["pointerdown", "click"].forEach(function (ev) { $("moveWarn").addEventListener(ev, function (e) { e.stopPropagation(); }); });
+  /* On a phone, real steps count too: steady up-and-down acceleration for about 3 seconds */
+  window.addEventListener("devicemotion", function (e) {
+    var a = e.accelerationIncludingGravity; if (!a || a.x == null) return;
+    var now = Date.now(), m = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+    move.samples.push([now, m]); while (move.samples.length && now - move.samples[0][0] > 3000) move.samples.shift();
+    if (move.samples.length < 20) return;
+    var mean = 0; move.samples.forEach(function (s) { mean += s[1]; }); mean /= move.samples.length;
+    var v = 0; move.samples.forEach(function (s) { v += (s[1] - mean) * (s[1] - mean); }); v = Math.sqrt(v / move.samples.length);
+    var was = move.sensor; move.sensor = v > 1.2 && now - move.samples[0][0] > 2500;
+    if (move.sensor && !was) move.kept = false;
+  });
+  document.addEventListener("keydown", function (e) {
+    var t = e.target; if (t && t.tagName === "INPUT" && t.type !== "checkbox" && t.type !== "range") return;
+    if (e.metaKey || e.ctrlKey || e.altKey || e.repeat || !state.power) return;
+    if (e.key === "g" || e.key === "G") setWalk(!move.sim);
+  });
+
+  /* Step-by-step order: number what's visible so each piece arrives a beat after the last */
+  function numberSteps() {
+    var n = 0;
+    [$("drawer").querySelector(".drawer-head"), $("lvBar"), $("adjResetBar")].forEach(function (el) { if (el && !el.hidden) el.style.setProperty("--n", n++); });
+    Array.prototype.forEach.call(document.querySelectorAll("#drawerBody > .dsec"), function (sec) { sec.style.setProperty("--n", n++); });
+    Array.prototype.forEach.call(document.querySelectorAll("#drawer .dsec-body"), function (body) {
+      var k = 0; Array.prototype.forEach.call(body.children, function (c) { if (!c.hidden) c.style.setProperty("--n", k++); });
+    });
+  }
+  numberSteps();
+  ["click", "focusin"].forEach(function (ev) { $("drawer").addEventListener(ev, function () { requestAnimationFrame(numberSteps); }, true); });
+  var _setEditing = setEditing;
+  setEditing = function (open) { numberSteps(); _setEditing(open); };
+
+  /* 2.2 Saved recipes */
+  var recipes = [];
+  try { recipes = JSON.parse(localStorage.getItem("atmos-recipes") || "[]") || []; } catch (e) { recipes = []; }
+  function saveRecipes() { try { localStorage.setItem("atmos-recipes", JSON.stringify(recipes)); } catch (e) {} }
+  function baseOf(id) { return FILTERS.filter(function (f) { return f.id === id; })[0]; }
+  function addRecipeFilter(r) {
+    var b = baseOf(r.base); if (!b) return;
+    FILTERS.push({ id: r.id, name: r.name, rcp: r, base: b.id, baked: b.baked, source: b.source, recipe: b.recipe, grain: b.grain, desc: "Your recipe: " + b.name + " with your adjustments." });
+  }
+  recipes.forEach(addRecipeFilter);
+  function recipeWord(a) {
+    var cands = [
+      ["exposure", a.exposure / 2, "bright", "dark"], ["warmth", a.warmth / 100, "warm", "cool"], ["contrast", a.contrast / 100, "punchy", "soft"],
+      ["saturation", a.saturation / 100, "vivid", "muted"], ["shadows", a.shadows / 100, "lifted", "deep"], ["vignette", a.vignette / 100, "vignette", "vignette"],
+      ["tint", a.tint / 100, "magenta", "green"], ["highlights", a.highlights / 100, "glow", "tamed"]
+    ].filter(function (c) { return c[1]; });
+    if (!cands.length) return "custom";
+    cands.sort(function (x, y) { return Math.abs(y[1]) - Math.abs(x[1]); });
+    return cands[0][1] > 0 ? cands[0][2] : cands[0][3];
+  }
+  function saveRecipe() {
+    var f = FILTERS[state.idx];
+    if (f.live) { toast("Pick a look first, then save it as a recipe"); return; }
+    if (!adjusted() && state.intensity === 1) { toast("Move a slider first, then save it as a recipe"); return; }
+    var base = f.rcp ? baseOf(f.base) : f, snap = {};
+    ADJ.forEach(function (a) { if (adj[a.id]) snap[a.id] = adj[a.id]; });
+    var name = base.name + " · " + recipeWord(adj), k = 2, taken = function (nm) { return recipes.some(function (r) { return r.name === nm; }); };
+    while (taken(name)) name = base.name + " · " + recipeWord(adj) + " " + k++;
+    var r = { id: "rcp-" + Date.now(), base: base.id, name: name, adj: snap, intensity: state.intensity };
+    recipes.push(r); saveRecipes(); addRecipeFilter(r);
+    buildChips(); state.idx = FILTERS.length - 1; render(); wakeLabel(300); wakeDock(1800);
+    toast("Saved recipe · " + name);
+  }
+  function deleteRecipe() {
+    var f = FILTERS[state.idx]; if (!f.rcp) return;
+    var baseIdx = FILTERS.indexOf(baseOf(f.base)), name = f.name;
+    recipes = recipes.filter(function (r) { return r.id !== f.rcp.id; }); saveRecipes();
+    FILTERS.splice(state.idx, 1);
+    state.idx = baseIdx >= 0 ? baseIdx : 0;
+    buildChips(); render(); wakeDock(1800);
+    toast("Recipe removed · " + name);
+  }
+  function applyRecipe(r) {
+    var target = {};
+    ADJ.forEach(function (a) {
+      target[a.id] = r.adj[a.id] || 0;
+      if (r.adj[a.id] && !quick[a.id]) { quick[a.id] = true; var row = $("row-" + a.id); if (row) row.hidden = false; }
+    });
+    saveQuick(); renderAddBar("adjWB"); renderAddBar("adjMain");
+    state.intensity = r.intensity; $("intensity").value = Math.round(r.intensity * 100); $("intensityVal").textContent = Math.round(r.intensity * 100) + "%";
+    tweenAdj(target, null, 700);
+  }
+  function updateRecipeRow(f) {
+    var row = $("recipeRow"); row.hidden = !!f.live;
+    $("recipeRowText").textContent = f.rcp ? "Delete recipe" : "Save as recipe";
+    $("recipeIco").textContent = f.rcp ? "−" : "+";
+  }
+  $("recipeRow").addEventListener("click", function () { if (FILTERS[state.idx].rcp) deleteRecipe(); else saveRecipe(); });
+  if (recipes.length) { buildChips(); render(); }
+
+  /* Size control shared by Quick Adjustments and Playback */
+  var SIZES = [0.85, 1, 1.15, 1.3], SIZE_NAMES = ["Small", "Default", "Large", "Extra large"];
+  var sizes = { drawer: 1, pb: 1 };
+  try { var sv = JSON.parse(localStorage.getItem("atmos-sizes") || "null"); if (sv) { if (sv.drawer in SIZES) sizes.drawer = sv.drawer; if (sv.pb in SIZES) sizes.pb = sv.pb; } } catch (e) {}
+  function applySizes(which) {
+    viewport.style.setProperty("--ds", SIZES[sizes.drawer]);
+    viewport.style.setProperty("--ps", SIZES[sizes.pb]);
+    [["szDrawer", sizes.drawer], ["szPb", sizes.pb]].forEach(function (p) {
+      var b = $(p[0]).querySelectorAll(".sz-b"); b[0].disabled = p[1] === 0; b[1].disabled = p[1] === SIZES.length - 1;
+    });
+    try { localStorage.setItem("atmos-sizes", JSON.stringify(sizes)); } catch (e) {}
+    if (which) {
+      var el = which === "drawer" ? $("drawer") : $("playback");
+      el.classList.remove("sz-flash"); void el.offsetWidth; el.classList.add("sz-flash");
+      toast((which === "drawer" ? "Panel" : "Playback") + " size · " + SIZE_NAMES[sizes[which]]);
+      setTimeout(render, 450);
+    }
+  }
+  function stepSize(which, d) {
+    var n = Math.max(0, Math.min(SIZES.length - 1, sizes[which] + d));
+    if (n === sizes[which]) return; sizes[which] = n; applySizes(which);
+  }
+  [["szDrawer", "drawer"], ["szPb", "pb"]].forEach(function (p) {
+    Array.prototype.forEach.call($(p[0]).querySelectorAll(".sz-b"), function (b) {
+      b.addEventListener("click", function (e) { e.stopPropagation(); stepSize(p[1], +b.dataset.d); });
+    });
+  });
+  /* Pinch to resize: trackpad pinch (ctrl + wheel) or two fingers on a touch screen */
+  [["drawer", "drawer"], ["playback", "pb"]].forEach(function (p) {
+    var el = $(p[0]), acc = 0, lastT = 0, d0 = null;
+    el.addEventListener("wheel", function (e) {
+      if (!e.ctrlKey) return; e.preventDefault();
+      acc += -e.deltaY; var now = Date.now();
+      if (Math.abs(acc) > 40 && now - lastT > 350) { stepSize(p[1], acc > 0 ? 1 : -1); acc = 0; lastT = now; }
+    }, { passive: false });
+    function dist(t) { var dx = t[0].clientX - t[1].clientX, dy = t[0].clientY - t[1].clientY; return Math.sqrt(dx * dx + dy * dy); }
+    el.addEventListener("touchstart", function (e) { if (e.touches.length === 2) d0 = dist(e.touches); }, { passive: true });
+    el.addEventListener("touchmove", function (e) {
+      if (e.touches.length !== 2 || !d0) return;
+      var r = dist(e.touches) / d0;
+      if (r > 1.18) { stepSize(p[1], 1); d0 = dist(e.touches); } else if (r < 0.85) { stepSize(p[1], -1); d0 = dist(e.touches); }
+    }, { passive: true });
+    el.addEventListener("touchend", function () { d0 = null; }, { passive: true });
+  });
+  applySizes();
+
+  /* Tap or click outside an open panel to close it */
+  document.addEventListener("pointerdown", function (e) {
+    var t = e.target; if (!t || !t.closest) return;
+    if (t.closest(".safety-stack, .move-warn, .lv-tag, .rotate-prompt")) return;
+    if (viewport.classList.contains("editing") && !pb.open) {
+      if (!t.closest("#drawer, #editTab, #adjBtn, #lvBtn")) setEditing(false);
+    }
+    if (pb.open) {
+      if (pb.mode === "full") { if (!t.closest("#viewport, #pbOpenBtn")) closePlayback(true); }
+      else if (!t.closest("#playback, #pbBtn, #pbOpenBtn")) closePlayback(true);
+    }
+  }, true);
+  $("rotateSkip").addEventListener("click", function () { document.documentElement.classList.add("rotate-ok"); });
   loadCaps();
   boot(false);
 })();
